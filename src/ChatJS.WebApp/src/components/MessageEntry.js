@@ -6,28 +6,43 @@ class MessageEntry extends Component {
 
   render() {
 
-    const { attribute } = this.props;
-    const { name, contents, timestamp } = this.props;
+    const attribute = this.getAttribute();
+    const { name, contents, timeStamp } = this.props;
+
+    const shouldRenderName = !!name;
+    const shouldRenderTime = !!timeStamp;
 
     return (
-      <div className={`message-item ${attribute ? attribute : ''} shadow-sm`}>
+      <div className={`message-item ${attribute}`}>
        
-        { !!name && 
-          <div className="font-weight-bold small text-muted">
+        { shouldRenderName && 
+          <div className="message-name">
             {name}
-          </div>
+          </div> 
         }
 
-        <div className="d-inline-flex flex-wrap">
-          <div className="m-1 mr-2">{contents}</div>
-          { !!timestamp && 
-            <div className="ml-auto small message-time-label">
-              {timestamp.toLocaleTimeString(navigator.language, { hour: 'numeric', minute: 'numeric' })}
-            </div>
-          }  
+        <div className="d-inline-flex">
+          <div className="message-contents">{contents}</div>
+          { shouldRenderTime && 
+            <div className="message-time">
+              {this.getLocateTimeString()}
+            </div> 
+          }
         </div>
       </div>
     );
+  }
+
+  getAttribute() {
+    const { attribute} = this.props;
+    return !!attribute ? `message-item-${attribute}` : ``;
+  }
+
+  getLocateTimeString() {
+    const { timeStamp } = this.props;
+    return timeStamp.toLocaleTimeString(navigator.language, {
+      hour: 'numeric', minute: 'numeric'
+    });
   }
 }
 

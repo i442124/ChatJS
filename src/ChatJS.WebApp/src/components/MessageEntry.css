@@ -1,39 +1,54 @@
 .message-item,
 .message-item-send,
 .message-item-received {
-    
-    display: flex;
-    flex-direction: column;
 
-    text-align: center;
-    align-self: center;
+    margin: 0.25rem 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 0.67rem;
 
-    margin: 0.5rem 1rem;
-    padding: 0.25rem 1rem;
+    word-break: break-word;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+}
 
+.message-item {
+    text-align: center;
+    align-self: center;
+    
     color: #ffffff;
-    background-color: #fa9231;
+    background: #fa9231;
 }
 
 .message-item-send {
-    text-align:right;
+    max-width: 85%;
+    text-align: right;
     align-self: flex-end;
-
+    
     color: #ffffff;
-    background-color: #ffb978;
+    background: #ffb978;
 }
 
 .message-item-received {
+    max-width: 85%;
     text-align: left;
     align-self: flex-start;
 
     color: #8d8d8d;
-    background-color: #ffffff;
+    background: #ffffff;
 }
 
-.message-time-label {
+.message-name {
+    font-size: small;
+    font-weight: bold;
+}
+
+.message-time {
     min-width: 75px;
+    font-size: small;
     text-align: right;
     align-self: flex-end;
+}
+
+.message-content {
+    margin: 0.25rem;
+    margin-right: 0.5rem;
 }

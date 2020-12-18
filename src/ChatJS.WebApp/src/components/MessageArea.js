@@ -12,9 +12,9 @@ class MessageArea extends Component {
           <div className="col" style={{ background: '#e5ddd5'}}>
 
             <div className="d-flex flex-column">
-              <MessageEntry attribute="message-item-send" contents="This message is send" timestamp={new Date()}/>
-              <MessageEntry attribute="message-item-received" contents="This message is received" timestamp={new Date()}/>
-              <MessageEntry attribute="message-item-received" contents="This message has name" name="The author" timestamp={new Date()}/>
+              <MessageEntry attribute="send" contents="This message is send" timeStamp={new Date()}/>
+              <MessageEntry attribute="received" contents="This message is received" timeStamp={new Date()}/>
+              <MessageEntry attribute="received" contents="This message has name" name="The author" timeStamp={new Date()}/>
               <MessageEntry contents="This message was send from the system"/>
             </div>
           </div>
