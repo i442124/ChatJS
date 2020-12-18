@@ -1,0 +1,20 @@
+
+.status-online {
+    background: #43b581;
+    border: solid 2px white;
+}
+
+.status-idle {
+    background: #faa61a;
+    border: solid 2px white;
+}
+
+.status-busy {
+    background: #f04747;
+    border: solid 2px white;
+}
+
+.status-offline {
+    background: #ffffff;
+    border: solid 2px #ededed;
+}

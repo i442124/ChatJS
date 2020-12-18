@@ -37,6 +37,8 @@
     <Content Include="package.json" />
     <Content Include="src\App.css" />
     <Content Include="src\App.js" />
+    <Content Include="src\assets\img\logo.png" />
+    <Content Include="src\assets\ico\user.svg" />
     <Content Include="src\components\api-authorization\ApiAuthorizationConstants.js" />
     <Content Include="src\components\api-authorization\ApiAuthorizationRoutes.js">
       <SubType>Code</SubType>
@@ -53,6 +55,24 @@
     <Content Include="src\components\api-authorization\actions\LogoutAction.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\Banner.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\Banner.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatListArea.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatListArea.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatListEntry.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatListEntry.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\index.css" />
     <Content Include="src\index.js" />
     <Content Include="src\pages\HomePage.css" />
@@ -61,10 +81,14 @@
   <ItemGroup>
     <Folder Include="public\" />
     <Folder Include="src\" />
+    <Folder Include="src\assets\img\" />
+    <Folder Include="src\assets\ico\" />
+    <Folder Include="src\assets\styles\" />
     <Folder Include="src\components\" />
     <Folder Include="src\components\admin\" />
     <Folder Include="src\components\api-authorization\" />
     <Folder Include="src\components\api-authorization\actions\" />
+    <Folder Include="src\assets\" />
     <Folder Include="src\pages\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
