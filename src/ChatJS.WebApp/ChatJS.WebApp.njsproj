@@ -73,6 +73,18 @@
     <Content Include="src\components\ChatListEntry.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\MessageArea.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\MessageArea.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\MessageEntry.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\MessageEntry.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\index.css" />
     <Content Include="src\index.js" />
     <Content Include="src\pages\HomePage.css" />

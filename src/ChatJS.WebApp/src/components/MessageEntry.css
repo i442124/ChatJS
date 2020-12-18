@@ -1,0 +1,39 @@
+.message-item,
+.message-item-send,
+.message-item-received {
+    
+    display: flex;
+    flex-direction: column;
+
+    text-align: center;
+    align-self: center;
+    border-radius: 0.67rem;
+
+    margin: 0.5rem 1rem;
+    padding: 0.25rem 1rem;
+
+    color: #ffffff;
+    background-color: #fa9231;
+}
+
+.message-item-send {
+    text-align:right;
+    align-self: flex-end;
+
+    color: #ffffff;
+    background-color: #ffb978;
+}
+
+.message-item-received {
+    text-align: left;
+    align-self: flex-start;
+
+    color: #8d8d8d;
+    background-color: #ffffff;
+}
+
+.message-time-label {
+    min-width: 75px;
+    text-align: right;
+    align-self: flex-end;
+}
