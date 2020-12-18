@@ -265,6 +265,7 @@ FakesAssemblies/
 *.GhostDoc.xml
 
 # Node.js Tools for Visual Studio
+.eslintcache
 .ntvs_analysis.dat
 node_modules/
 
