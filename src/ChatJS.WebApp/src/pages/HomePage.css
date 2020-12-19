@@ -1,0 +1,10 @@
+.row-span {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.row-span > * {
+    height: 100%;
+    display: inline-block;
+}

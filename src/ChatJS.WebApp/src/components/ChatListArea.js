@@ -16,7 +16,7 @@ class ChatListArea extends Component {
 
     return (
       <div className="d-flex flex-column h-100">
-        <div className="row flex-grow-1">
+        <div className="row no-gutters flex-grow-1">
           <div className="col">
             <ul className="list-group">
               <li className="list-group-item list-group-item-action p-2"><ChatListEntry name={"Name"} caption={"#0002"} status={"online"}/></li>
