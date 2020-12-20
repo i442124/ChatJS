@@ -5,7 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    
+    <!-- FluentValidation -->
     <PackageReference Include="FluentValidation" Version="9.3.0" />
+    
   </ItemGroup>
+
+  <Import Project="..\..\common.props" />
+  <Import Project="..\..\stylecop.props" />
 
 </Project>

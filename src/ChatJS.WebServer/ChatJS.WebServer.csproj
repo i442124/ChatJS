@@ -46,21 +46,17 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\ChatJS.Data\ChatJS.Data.csproj" />
+    <ProjectReference Include="..\ChatJS.Domain\ChatJS.Domain.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Compile Remove="Controllers\Admin\**" />
     <Content Remove="Controllers\Admin\**" />
     <Content Remove="obj\**" />
     <Content Remove="bin\**" />
     <EmbeddedResource Remove="Controllers\Admin\**" />
     <None Remove="Controllers\Admin\**" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="wwwroot\img\" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\ChatJS.Data\ChatJS.Data.csproj" />
-    <ProjectReference Include="..\ChatJS.Domain\ChatJS.Domain.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\common.props" />
