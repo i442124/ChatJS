@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ChatJS.WebServer.Configurations.Identity
+namespace ChatJS.Data.Configurations.Identity
 {
     public class DeviceFlowCodesConfiguration : IEntityTypeConfiguration<DeviceFlowCodes>
     {

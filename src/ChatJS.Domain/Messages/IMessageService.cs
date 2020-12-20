@@ -1,8 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
-using ChatJS.WebServer.Models.Messages.Commands;
+using ChatJS.Domain;
+using ChatJS.Domain.Messages;
+using ChatJS.Domain.Messages.Commands;
 
-namespace ChatJS.WebServer.Models.Messages
+namespace ChatJS.Domain.Messages
 {
     public interface IMessageService
     {

@@ -1,5 +1,5 @@
+using ChatJS.Data;
 using ChatJS.WebServer;
-using ChatJS.WebServer.Data;
 using ChatJS.WebServer.Hubs;
 
 using Microsoft.AspNetCore.Authentication;

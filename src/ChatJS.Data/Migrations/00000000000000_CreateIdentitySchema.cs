@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ChatJS.WebServer.Data.Migrations
+namespace ChatJS.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {

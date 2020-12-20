@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace ChatJS.WebServer.Models.Messages
+namespace ChatJS.Domain.Messages
 {
     public interface IMessageRules
     {

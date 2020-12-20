@@ -1,4 +1,4 @@
-﻿namespace ChatJS.WebServer.Models.Messages
+﻿namespace ChatJS.Domain.Messages
 {
     public enum MessageStatusType
     {

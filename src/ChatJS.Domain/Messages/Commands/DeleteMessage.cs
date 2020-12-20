@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChatJS.WebServer.Models.Messages.Commands
+namespace ChatJS.Domain.Messages.Commands
 {
     public class DeleteMessage
     {

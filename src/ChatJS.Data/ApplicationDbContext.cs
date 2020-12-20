@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace ChatJS.WebServer.Data
+namespace ChatJS.Data
 {
     public class ApplicationDbContext : ApiAuthorizationDbContext<IdentityUser>
     {
