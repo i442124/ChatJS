@@ -73,6 +73,12 @@
     <Content Include="src\components\ChatListEntry.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\InputArea.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\InputArea.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\components\MessageArea.css">
       <SubType>Code</SubType>
     </Content>

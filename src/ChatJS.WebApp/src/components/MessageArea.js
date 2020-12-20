@@ -1,6 +1,7 @@
 import { Component } from "react";
 
 import './MessageArea.css';
+import InputArea from "./InputArea";
 import MessageEntry from "./MessageEntry";
 
 class MessageArea extends Component {
@@ -17,6 +18,11 @@ class MessageArea extends Component {
               <MessageEntry attribute="received" contents="This message has name" name="The author" timeStamp={new Date()}/>
               <MessageEntry contents="This message was send from the system"/>
             </div>
+          </div>
+        </div>
+        <div className="row no-gutters flex-grow-0">
+          <div className="col" style={{ background: '#efefef'}}>
+            <InputArea/>
           </div>
         </div>
       </div>
