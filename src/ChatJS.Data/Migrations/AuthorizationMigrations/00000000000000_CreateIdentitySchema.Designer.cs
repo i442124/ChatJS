@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace ChatJS.Data.Migrations
+namespace ChatJS.Data.Migrations.AuthorizationMigrations
 {
     [DbContext(typeof(AuthorizationDbContext))]
     [Migration("20201220164521_00000000000000_CreateIdentitySchema")]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 using ChatJS.Domain;
 using ChatJS.Domain.Chatlogs;
+using ChatJS.Domain.Memberships;
 
 namespace ChatJS.Domain.Users
 {
@@ -11,8 +12,12 @@ namespace ChatJS.Domain.Users
     {
         public Guid Id { get; set; }
 
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
 
-        public virtual ICollection<Chatlog> Chatlogs { get; set; }
+        public string NameUid { get; set; }
+
+        public virtual ICollection<Membership> Memberships { get; set; }
+
+        public UserStatusType Status { get; set; }
     }
 }

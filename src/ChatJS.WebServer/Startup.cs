@@ -60,7 +60,7 @@ namespace ChatJS.WebServer
                 .AddIdentityServerJwt();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AuthorizationDbContext authDbContext)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AuthorizationDbContext authContext, ApplicationDbContext appContext)
         {
             if (env.IsDevelopment())
             {
@@ -93,7 +93,8 @@ namespace ChatJS.WebServer
                 }
             });
 
-            authDbContext.Database.Migrate();
+            appContext.Database.Migrate();
+            authContext.Database.Migrate();
         }
     }
 }

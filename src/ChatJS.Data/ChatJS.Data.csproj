@@ -44,7 +44,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Configurations\" />
     <Folder Include="Rules\" />
     <Folder Include="Services\" />
   </ItemGroup>
