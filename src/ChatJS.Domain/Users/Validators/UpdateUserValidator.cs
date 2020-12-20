@@ -1,4 +1,5 @@
-﻿using ChatJS.Domain.Users.Commands;
+﻿using ChatJS.Domain.Users;
+using ChatJS.Domain.Users.Commands;
 
 using FluentValidation;
 

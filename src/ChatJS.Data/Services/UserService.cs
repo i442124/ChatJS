@@ -52,7 +52,7 @@ namespace ChatJS.Data.Services
             }
             else
             {
-                throw new ValidationException("Validation failed.", result.Errors);
+                throw new ValidationException(result.Errors);
             }
         }
 
