@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace ChatJS.Domain.Messages
+namespace ChatJS.Domain.Chatlogs
 {
-    public interface IMessageService
+    public interface IChatlogService
     {
     }
 }
