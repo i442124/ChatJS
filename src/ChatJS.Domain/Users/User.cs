@@ -10,11 +10,13 @@ namespace ChatJS.Domain.Users
 {
     public class User
     {
+        public string DisplayName { get; set; }
+
+        public string DisplayNameUid { get; set; }
+
+        public string IdentityUserId { get; set; }
+
         public Guid Id { get; set; }
-
-        public string Name { get; set; }
-
-        public string NameUid { get; set; }
 
         public virtual ICollection<Membership> Memberships { get; set; }
 

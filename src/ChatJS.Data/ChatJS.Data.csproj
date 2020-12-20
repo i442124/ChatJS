@@ -43,11 +43,6 @@
     <ProjectReference Include="..\ChatJS.Domain\ChatJS.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Rules\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
   <Import Project="..\..\common.props" />
   <Import Project="..\..\stylecop.props" />
 
