@@ -43,20 +43,24 @@ namespace ChatJS.WebServer
                 options.UseSqlServer(connectionString:
                     Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddDbContext<AuthorizationDbContext>(options =>
+                options.UseSqlServer(connectionString:
+                    Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<IdentityUser>(options =>
                 options.SignIn.RequireConfirmedAccount = false)
-                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddEntityFrameworkStores<AuthorizationDbContext>()
                     .AddDefaultTokenProviders();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<IdentityUser,
-                ApplicationDbContext>();
+                AuthorizationDbContext>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AuthorizationDbContext authDbContext)
         {
             if (env.IsDevelopment())
             {
@@ -88,6 +92,8 @@ namespace ChatJS.WebServer
                     spaBuilder.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+            authDbContext.Database.Migrate();
         }
     }
 }
