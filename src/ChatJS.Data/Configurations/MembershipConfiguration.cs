@@ -16,11 +16,13 @@ namespace ChatJS.Data.Configurations
 
             builder
                 .HasOne(x => x.Chatlog)
-                .WithMany(x => x.Memberships);
+                .WithMany(x => x.Memberships)
+                .HasForeignKey(x => x.ChatlogId);
 
             builder
                 .HasOne(x => x.User)
-                .WithMany(x => x.Memberships);
+                .WithMany(x => x.Memberships)
+                .HasForeignKey(x => x.UserId);
         }
     }
 }
