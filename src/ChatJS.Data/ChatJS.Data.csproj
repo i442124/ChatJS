@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -33,13 +33,10 @@
 
     <!-- Identity Server -->
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.1" />
+    
+    <!-- FluentValidation -->
+    <PackageReference Include="FluentValidation" Version="9.3.0" />
 
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-    <Folder Include="Services\" />
-    <Folder Include="Rules\" />
   </ItemGroup>
 
   <ItemGroup>

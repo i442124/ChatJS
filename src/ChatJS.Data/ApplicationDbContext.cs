@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Reflection;
 
+using ChatJS.Domain;
+using ChatJS.Domain.Messages;
+
+using IdentityServer4.EntityFramework;
 using IdentityServer4.EntityFramework.Options;
 
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
@@ -25,5 +29,7 @@ namespace ChatJS.Data
             builder.ApplyConfigurationsFromAssembly(
                 assembly: Assembly.GetExecutingAssembly());
         }
+
+        public DbSet<Message> Messages { get; set; }
     }
 }
