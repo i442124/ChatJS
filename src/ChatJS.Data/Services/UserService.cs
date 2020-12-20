@@ -56,6 +56,18 @@ namespace ChatJS.Data.Services
             }
         }
 
+        public async Task DeleteAsync(DeleteUser command)
+        {
+            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Status != UserStatusType.Deleted && x.Id == command.Id);
+            if (user == null)
+            {
+                throw new DataException($"User with Id '{command.Id}' was not found.");
+            }
+
+            user.Status = UserStatusType.Deleted;
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task UpdateAsync(UpdateUser command)
         {
             var result = await _updateValidator.ValidateAsync(command);
@@ -71,18 +83,6 @@ namespace ChatJS.Data.Services
                 user.DisplayNameUid = command.DisplayNameUid;
                 await _dbContext.SaveChangesAsync();
             }
-        }
-
-        public async Task DeleteAsync(DeleteUser command)
-        {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Status != UserStatusType.Deleted && x.Id == command.Id);
-            if (user == null)
-            {
-                throw new DataException($"User with Id '{command.Id}' was not found.");
-            }
-
-            user.Status = UserStatusType.Deleted;
-            await _dbContext.SaveChangesAsync();
         }
 
         private async Task<string> GenerateDisplayName()
