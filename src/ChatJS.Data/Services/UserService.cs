@@ -32,14 +32,12 @@ namespace ChatJS.Data.Services
 
         public async Task ConfirmAsync(ConfirmUser command)
         {
-            var user = await _dbContext.Users
-                .FirstOrDefaultAsync(x =>
-                    x.Id == command.Id &&
-                    x.Status == UserStatusType.Peinding);
+            var userById = new GetUserById { Id = command.Id };
+            var user = await GetByIdAsync(userById);
 
-            if (user == null)
+            if (user.Status != UserStatusType.Pending)
             {
-                throw new DataException($"User with Id '{command.Id}' not found.");
+                throw new DataException($"User with Id '{command.Id}' is not in a pending state.");
             }
 
             user.Status = UserStatusType.Active;
@@ -70,14 +68,42 @@ namespace ChatJS.Data.Services
 
         public async Task DeleteAsync(DeleteUser command)
         {
-            var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Status != UserStatusType.Deleted && x.Id == command.Id);
+            var userById = new GetUserById { Id = command.Id };
+            var user = await GetByIdAsync(userById);
+
+            user.Status = UserStatusType.Deleted;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<User> GetByIdAsync(GetUserById command)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(user =>
+                    user.Id == command.Id &&
+                    user.Status != UserStatusType.Deleted);
+
             if (user == null)
             {
                 throw new DataException($"User with Id '{command.Id}' was not found.");
             }
 
-            user.Status = UserStatusType.Deleted;
-            await _dbContext.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<User> GetByNameAsync(GetUserByName command)
+        {
+            var user = await _dbContext.Users
+               .FirstOrDefaultAsync(user =>
+                   user.DisplayName == command.DisplayName &&
+                   user.DisplayNameUid == command.DisplayNameUid &&
+                   user.Status != UserStatusType.Deleted);
+
+            if (user == null)
+            {
+                throw new DataException($"User with Name '{command.DisplayName}#{command.DisplayNameUid}' was not found.");
+            }
+
+            return user;
         }
 
         public async Task UpdateAsync(UpdateUser command)
@@ -85,15 +111,16 @@ namespace ChatJS.Data.Services
             var result = await _updateValidator.ValidateAsync(command);
             if (result.IsValid)
             {
-                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Status != UserStatusType.Deleted && x.Id == command.Id);
-                if (user == null)
-                {
-                    throw new DataException($"User with Id '{command.Id}' was not found.");
-                }
+                var userById = new GetUserById { Id = command.Id };
+                var user = await GetByIdAsync(userById);
 
                 user.DisplayName = command.DisplayName;
                 user.DisplayNameUid = command.DisplayNameUid;
                 await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ValidationException(result.Errors);
             }
         }
 

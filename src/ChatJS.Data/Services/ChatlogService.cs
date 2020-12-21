@@ -31,14 +31,26 @@ namespace ChatJS.Data.Services
 
         public async Task DeleteAsync(DeleteChatlog command)
         {
-            var chatlog = await _dbContext.Chatlogs.FirstOrDefaultAsync(x => x.Status != ChatlogStatusType.Deleted);
+            var chatlogById = new GetChatlogById { Id = command.Id };
+            var chatlog = await GetByIdAsync(chatlogById);
+
+            chatlog.Status = ChatlogStatusType.Deleted;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Chatlog> GetByIdAsync(GetChatlogById command)
+        {
+            var chatlog = await _dbContext.Chatlogs
+                .FirstOrDefaultAsync(chatlog =>
+                    chatlog.Id == command.Id &&
+                    chatlog.Status != ChatlogStatusType.Deleted);
+
             if (chatlog == null)
             {
                 throw new DataException($"Chatlog with Id '{command.Id}' was not found");
             }
 
-            chatlog.Status = ChatlogStatusType.Deleted;
-            await _dbContext.SaveChangesAsync();
+            return chatlog;
         }
     }
 }

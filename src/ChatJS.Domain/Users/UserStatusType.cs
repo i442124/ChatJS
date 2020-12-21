@@ -2,7 +2,7 @@
 {
     public enum UserStatusType
     {
-        Peinding = 0,
+        Pending = 0,
 
         Active = 1,
 

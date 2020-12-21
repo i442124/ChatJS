@@ -40,7 +40,7 @@ namespace ChatJS.WebServer.Services
         public async Task EnsureUserConfirmedAsync(IdentityUser identityUser)
         {
             var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.IdentityUserId == identityUser.Id);
-            if (user != null && user.Status == UserStatusType.Peinding)
+            if (user != null && user.Status == UserStatusType.Pending)
             {
                 await _userService.ConfirmAsync(new ConfirmUser
                 {
