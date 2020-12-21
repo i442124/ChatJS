@@ -3,6 +3,9 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
+using ChatJS.WebServer;
+using ChatJS.WebServer.Services;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,15 +15,18 @@ namespace ChatJS.WebServer.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IIntegrityService _integrityService;
 
         public LoginModel(
             SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            IIntegrityService integrityService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _integrityService = integrityService;
         }
 
         [BindProperty]
@@ -38,6 +44,10 @@ namespace ChatJS.WebServer.Areas.Identity.Pages.Account
 
                 if (signInResult.Succeeded)
                 {
+                    var user = await _userManager.FindByNameAsync(Input.Name);
+                    await _integrityService.EnsureUserCreatedAsync(user);
+                    await _integrityService.EnsureUserConfirmedAsync(user);
+
                     return LocalRedirect(returnUrl);
                 }
                 else if (signInResult.RequiresTwoFactor)

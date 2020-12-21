@@ -18,29 +18,32 @@ namespace ChatJS.Data.Rules
             _dbContext = dbContext;
         }
 
-        public Task<bool> IsValidAsync(Guid id)
+        public async Task<bool> IsValidAsync(Guid id)
         {
-            return _dbContext.Users
-                .AnyAsync(user =>
-                    user.Id == id &&
-                    user.Status != UserStatusType.Deleted);
+            var any = await _dbContext.Users.AnyAsync(
+                user => user.Status != UserStatusType.Deleted &&
+                        user.Id == id);
+
+            return any;
         }
 
-        public Task<bool> IsDisplayNameUniqueAsync(string displayName)
+        public async Task<bool> IsDisplayNameUniqueAsync(string displayName)
         {
-            return _dbContext.Users
-                .AnyAsync(user =>
-                    user.DisplayName == displayName &&
-                    user.Status != UserStatusType.Deleted);
+            var any = await _dbContext.Users.AnyAsync(
+                user => user.DisplayName == displayName &&
+                        user.Status != UserStatusType.Deleted);
+
+            return !any;
         }
 
-        public Task<bool> IsDisplayNameUniqueAsync(string displayName, string displayNameUid)
+        public async Task<bool> IsDisplayNameUniqueAsync(string displayName, string displayNameUid)
         {
-            return _dbContext.Users
-                .AnyAsync(user =>
-                    user.DisplayName == displayName &&
-                    user.DisplayNameUid == displayNameUid &&
-                    user.Status != UserStatusType.Deleted);
+            var any = await _dbContext.Users.AnyAsync(
+                user => user.DisplayName == displayName &&
+                        user.DisplayNameUid == displayNameUid &&
+                        user.Status != UserStatusType.Deleted);
+
+            return !any;
         }
     }
 }

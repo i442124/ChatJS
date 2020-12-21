@@ -30,21 +30,33 @@ namespace ChatJS.Data.Services
             _updateValidator = updateValidator;
         }
 
+        public async Task ConfirmAsync(ConfirmUser command)
+        {
+            var user = await _dbContext.Users
+                .FirstOrDefaultAsync(x =>
+                    x.Id == command.Id &&
+                    x.Status == UserStatusType.Peinding);
+
+            if (user == null)
+            {
+                throw new DataException($"User with Id '{command.Id}' not found.");
+            }
+
+            user.Status = UserStatusType.Active;
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task CreateAsync(CreateUser command)
         {
             var result = await _createValidator.ValidateAsync(command);
             if (result.IsValid)
             {
-                var displayName = await GenerateDisplayName();
-                var displayNameUid = await GenerateDisplayNameUid(displayName);
-
                 var user = new User
                 {
-                    DisplayName = displayName,
-                    DisplayNameUid = displayNameUid,
+                    DisplayName = command.DisplayName,
+                    DisplayNameUid = command.DisplayNameUid,
                     IdentityUserId = command.IdentityUserId,
                     Id = command.Id,
-                    Status = UserStatusType.Active,
                 };
 
                 await _dbContext.AddAsync(user);
@@ -109,7 +121,7 @@ namespace ChatJS.Data.Services
 
             while (displayNameUidFound)
             {
-                displayNameUid = $"{random.Next()}";
+                displayNameUid = $"{random.Next(9999):D4}";
                 displayNameUidFound = await _dbContext.Users
                     .AnyAsync(x => x.DisplayName == displayName &&
                                    x.DisplayNameUid == displayNameUid);
