@@ -15,12 +15,15 @@ namespace ChatJS.Domain.Messages
 
         public Guid ChatlogId { get; set; }
 
+        public string Content { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public User CreatedByUser { get; set; }
 
         public Guid CreatedBy { get; set; }
 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Index { get; set; }
 
         public MessageStatusType Status { get; set; }
