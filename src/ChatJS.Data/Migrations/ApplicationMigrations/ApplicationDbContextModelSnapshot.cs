@@ -54,28 +54,30 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
             modelBuilder.Entity("ChatJS.Domain.Messages.Message", b =>
                 {
                     b.Property<int>("Index")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<Guid>("ChatlogId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("CreatedByUserId")
+                    b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("Index", "CreatedBy", "ChatlogId");
+                    b.HasKey("Index", "ChatlogId");
 
                     b.HasIndex("ChatlogId");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("Messages");
                 });
@@ -86,10 +88,13 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameUid")
+                    b.Property<string>("DisplayNameUid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdentityUserId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
@@ -129,7 +134,9 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
 
                     b.HasOne("ChatJS.Domain.Users.User", "CreatedByUser")
                         .WithMany()
-                        .HasForeignKey("CreatedByUserId");
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Chatlog");
 

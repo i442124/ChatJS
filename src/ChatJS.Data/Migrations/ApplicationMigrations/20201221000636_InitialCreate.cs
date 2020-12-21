@@ -24,8 +24,9 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NameUid = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DisplayNameUid = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentityUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -63,15 +64,16 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                 columns: table => new
                 {
                     ChatlogId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Index = table.Column<int>(type: "int", nullable: false),
+                    Index = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedByUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Messages", x => new { x.Index, x.CreatedBy, x.ChatlogId });
+                    table.PrimaryKey("PK_Messages", x => new { x.Index, x.ChatlogId });
                     table.ForeignKey(
                         name: "FK_Messages_Chatlogs_ChatlogId",
                         column: x => x.ChatlogId,
@@ -79,11 +81,11 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Messages_Users_CreatedByUserId",
-                        column: x => x.CreatedByUserId,
+                        name: "FK_Messages_Users_CreatedBy",
+                        column: x => x.CreatedBy,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -97,9 +99,9 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                 column: "ChatlogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Messages_CreatedByUserId",
+                name: "IX_Messages_CreatedBy",
                 table: "Messages",
-                column: "CreatedByUserId");
+                column: "CreatedBy");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
