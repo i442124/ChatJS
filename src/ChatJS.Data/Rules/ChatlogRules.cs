@@ -19,12 +19,13 @@ namespace ChatJS.Data.Rules
             _dbContext = dbContext;
         }
 
-        public Task<bool> IsValidAsync(Guid chatlogId)
+        public async Task<bool> IsValidAsync(Guid chatlogId)
         {
-            return _dbContext.Chatlogs
-                .AnyAsync(chatlog =>
-                    chatlog.Id == chatlogId &&
-                    chatlog.Status != ChatlogStatusType.Deleted);
+            var any = await _dbContext.Chatlogs.AnyAsync(
+                chatlog => chatlog.Id == chatlogId &&
+                           chatlog.Status != ChatlogStatusType.Deleted);
+
+            return any;
         }
     }
 }

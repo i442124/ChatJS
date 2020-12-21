@@ -18,13 +18,14 @@ namespace ChatJS.Data.Rules
             _dbContext = dbContext;
         }
 
-        public Task<bool> IsValidAsync(Guid userId, Guid chatlogId)
+        public async Task<bool> IsValidAsync(Guid userId, Guid chatlogId)
         {
-            return _dbContext.Memberships
-                .AnyAsync(membership =>
-                    membership.UserId == userId &&
-                    membership.ChatlogId == chatlogId &&
-                    membership.Status != MembershipStatusType.Suspended);
+            var any = await _dbContext.Memberships.AnyAsync(
+                membership => membership.UserId == userId &&
+                              membership.ChatlogId == chatlogId &&
+                              membership.Status != MembershipStatusType.Suspended);
+
+            return any;
         }
     }
 }
