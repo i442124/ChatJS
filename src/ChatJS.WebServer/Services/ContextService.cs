@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Data;
+using ChatJS.WebServer.Models;
 
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;
@@ -25,8 +26,9 @@ namespace ChatJS.WebServer.Services
             _httpContextAccesstor = httpContextAccessor;
         }
 
-        public async Task<Guid> CurrentUserAsync()
+        public async Task<CurrentUserModel> CurrentUserAsync()
         {
+            var result = new CurrentUserModel();
             var claimsPrincipal = _httpContextAccesstor.HttpContext.User;
             if (claimsPrincipal.Identity.IsAuthenticated)
             {
@@ -38,12 +40,15 @@ namespace ChatJS.WebServer.Services
                     var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.IdentityUserId == identityUserId);
                     if (user != null)
                     {
-                        return user.Id;
+                        result.Id = user.Id;
+                        result.IsAuthenticated = true;
+                        result.DisplayName = user.DisplayName;
+                        result.DisplayNameUid = user.DisplayNameUid;
                     }
                 }
             }
 
-            return default;
+            return result;
         }
     }
 }
