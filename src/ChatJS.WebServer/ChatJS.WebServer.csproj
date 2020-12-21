@@ -51,12 +51,13 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Remove="Controllers\Admin\**" />
-    <Content Remove="Controllers\Admin\**" />
     <Content Remove="obj\**" />
     <Content Remove="bin\**" />
-    <EmbeddedResource Remove="Controllers\Admin\**" />
-    <None Remove="Controllers\Admin\**" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Controllers\Admin\" />
+    <Folder Include="Controllers\Private\" />
   </ItemGroup>
 
   <Import Project="..\..\common.props" />

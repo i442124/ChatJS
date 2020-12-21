@@ -57,7 +57,7 @@ namespace ChatJS.WebServer
 
         public void ConfigureWebServices(IServiceCollection services)
         {
-            services.AddScoped<IBroadcastService, BroadcastService>();
+            services.AddScoped<IContextService, ContextService>();
             services.AddScoped<IIntegrityService, IntegrityService>();
         }
 
