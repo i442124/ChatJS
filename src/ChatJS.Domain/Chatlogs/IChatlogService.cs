@@ -7,6 +7,10 @@ namespace ChatJS.Domain.Chatlogs
 {
     public interface IChatlogService
     {
+        Task CreateAsync(CreateChatlog command);
+
+        Task DeleteAsync(DeleteChatlog command);
+
         Task<Chatlog> GetByIdAsync(GetChatlogById command);
     }
 }
