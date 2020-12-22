@@ -12,6 +12,6 @@ namespace ChatJS.Models.Messages
 
         public DateTime TimeStamp { get; set; }
 
-        public MessageOriginAttribute Origin { get; set; }
+        public MessageOrigin Origin { get; set; }
     }
 }

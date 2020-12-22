@@ -11,6 +11,8 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "ChatJS.WebApp", "src\ChatJS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatJS.WebServer", "src\ChatJS.WebServer\ChatJS.WebServer.csproj", "{A69429E8-0354-4241-BD78-3235F25366E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatJS.Models", "src\ChatJS.Models\ChatJS.Models.csproj", "{4E2D3F88-A4AC-48F5-BE73-F4A1C358063B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{A69429E8-0354-4241-BD78-3235F25366E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A69429E8-0354-4241-BD78-3235F25366E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A69429E8-0354-4241-BD78-3235F25366E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E2D3F88-A4AC-48F5-BE73-F4A1C358063B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E2D3F88-A4AC-48F5-BE73-F4A1C358063B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E2D3F88-A4AC-48F5-BE73-F4A1C358063B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E2D3F88-A4AC-48F5-BE73-F4A1C358063B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

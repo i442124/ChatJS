@@ -1,46 +1,50 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
+using ChatJS.Domain;
 using ChatJS.Domain.Chatlogs;
 using ChatJS.Domain.Memberships;
-using ChatJS.Domain.Memberships.Commands;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Users;
-using ChatJS.Domain.Users.Commands;
+using ChatJS.Models;
 using ChatJS.Models.Chatlog;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ChatJS.Data.Builders.Private
 {
     public class ChatlogModelBuilder : IChatlogModelBuilder
     {
-        private readonly IUserService _userService;
-        private readonly IMembershipService _membershipService;
+        private readonly ApplicationDbContext _dbContext;
 
-        public ChatlogModelBuilder(
-            IUserService userService,
-            IMembershipService membershipService)
+        public ChatlogModelBuilder(ApplicationDbContext dbContext)
         {
-            _userService = userService;
-            _membershipService = membershipService;
+            _dbContext = dbContext;
         }
 
         public async Task<ChatlogAreaModel> BuildAreaAsync(Guid userId)
         {
-            var userById = new GetUserById { Id = userId };
-            var user = await _userService.GetByIdAsync(userById);
+            var memberships = await _dbContext.Memberships
+                .Where(x => x.Status == MembershipStatusType.Active)
+                .Where(x => x.UserId == userId)
+
+                    .Include(x => x.User)
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Messages)
+
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Memberships)
+                    .ThenInclude(x => x.User)
+                    .ToListAsync();
 
             var entries = new List<ChatlogEntryModel>();
-            foreach (var membership in user.Memberships)
+            foreach (var membership in memberships)
             {
-                if (membership.Status == MembershipStatusType.Active)
-                {
-                    var entryModel = BuildChatlogEntry(membership);
-                    entries.Add(entryModel);
-                }
+                var chatlogEntryModel = BuildEntry(membership);
+                entries.Add(chatlogEntryModel);
             }
 
             return new ChatlogAreaModel { Entries = entries };
@@ -48,17 +52,30 @@ namespace ChatJS.Data.Builders.Private
 
         public async Task<ChatlogEntryModel> BuildEntryAsync(Guid userId, Guid chatlogId)
         {
-            var membershipById = new GetMembershipById { UserId = userId, ChatlogId = chatlogId };
-            var membership = await _membershipService.GetByIdAsync(membershipById);
-            return BuildChatlogEntry(membership);
+            var membership = await _dbContext.Memberships
+                .Where(x => x.Status == MembershipStatusType.Active)
+                .Where(x => x.ChatlogId == chatlogId)
+                .Where(x => x.UserId == userId)
+
+                    .Include(x => x.User)
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Messages)
+
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Memberships)
+                    .ThenInclude(x => x.User)
+                    .FirstOrDefaultAsync();
+
+            return BuildEntry(membership);
         }
 
-        private ChatlogEntryModel BuildChatlogEntry(Membership membership)
+        private ChatlogEntryModel BuildEntry(Membership membership)
         {
-            var chatlogEntryModel = new ChatlogEntryModel();
             var membersWithoutSelf = GetMembersWithoutSelf(membership);
             if (membersWithoutSelf.Count > 0)
             {
+                var chatlogEntryModel = new ChatlogEntryModel();
+
                 var message = GetLatestMessage(membership.Chatlog);
                 if (message != null)
                 {

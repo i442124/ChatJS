@@ -1,6 +1,6 @@
 ﻿namespace ChatJS.Models.Messages
 {
-    public enum MessageOriginAttribute
+    public enum MessageOrigin
     {
         Send,
 

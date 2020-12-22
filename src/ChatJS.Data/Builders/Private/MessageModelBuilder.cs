@@ -1,42 +1,58 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Domain;
 using ChatJS.Domain.Chatlogs;
 using ChatJS.Domain.Memberships;
-using ChatJS.Domain.Memberships.Commands;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Users;
 using ChatJS.Models;
 using ChatJS.Models.Messages;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+
 namespace ChatJS.Data.Builders.Private
 {
     public class MessageModelBuilder : IMessageModelBuilder
     {
-        private IMembershipService _membershipService;
+        private readonly ApplicationDbContext _dbContext;
+
+        public MessageModelBuilder(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         public async Task<MessageAreaModel> BuildAreaAsync(Guid userId, Guid chatlogId)
         {
-            var membershipById = new GetMembershipById { UserId = userId, ChatlogId = chatlogId };
-            var membership = await _membershipService.GetByIdAsync(membershipById);
+            var membership = await _dbContext.Memberships
+                .Where(x => x.Status == MembershipStatusType.Active)
+                .Where(x => x.ChatlogId == chatlogId)
+                .Where(x => x.UserId == userId)
+
+                    .Include(x => x.User)
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Memberships)
+
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Messages)
+                    .ThenInclude(x => x.CreatedByUser)
+                    .FirstOrDefaultAsync();
 
             if (membership != null)
             {
                 var membersWithoutSelf = GetMembersWithoutSelf(membership);
                 if (membersWithoutSelf.Count > 1)
                 {
-                    var messageAreaModel = BuildGroupMessageArea(membership, membersWithoutSelf);
-                    return messageAreaModel;
+                    var messageArea = BuildGroupArea(membership, membersWithoutSelf);
+                    return messageArea;
                 }
                 else
                 {
-                    var messageAreaModel = BuildPrivateMessageAreaModel(membership, membersWithoutSelf.First());
-                    return messageAreaModel;
+                    var messageArea = BuildPrivateArea(membership, membersWithoutSelf.First());
+                    return messageArea;
                 }
             }
 
@@ -45,29 +61,39 @@ namespace ChatJS.Data.Builders.Private
 
         public async Task<MessageEntryModel> BuildEntryAsync(Guid userId, Guid chatlogId, int index)
         {
-            var membershipById = new GetMembershipById { UserId = userId, ChatlogId = chatlogId };
-            var membership = await _membershipService.GetByIdAsync(membershipById);
+            var message = await _dbContext.Messages
+                .Where(x => x.Status == MessageStatusType.Published)
+                .Where(x => x.ChatlogId == chatlogId)
+                .Where(x => x.Index == index)
 
-            var messages = membership.Chatlog.Messages.ToList();
-            var message = messages[index];
+                    .Include(x => x.Chatlog)
+                    .ThenInclude(x => x.Memberships)
+                    .ThenInclude(x => x.User)
 
-            if (membership != null)
+                    .Include(x => x.CreatedByUser)
+                    .FirstOrDefaultAsync();
+
+            var user = message.Chatlog.Memberships
+                .Where(x => x.UserId == userId)
+                .Select(x => x.User)
+                .FirstOrDefault();
+
+            if (user != null)
             {
-                var membersWithoutSelf = GetMembersWithoutSelf(membership);
-                if (membersWithoutSelf.Count > 1)
+                if (message.Chatlog.Memberships.Count > 2)
                 {
-                    BuildMessageEntry(message, membership.User);
+                    return BuildEntry(message, user);
                 }
                 else
                 {
-                    return BuildAnnonymousMessageEntry(message, membership.User);
+                    return BuildAnnonymousEntry(message, user);
                 }
             }
 
             return null;
         }
 
-        private MessageAreaModel BuildGroupMessageArea(Membership membership, IList<User> membersWithoutSelf)
+        private MessageAreaModel BuildGroupArea(Membership membership, IList<User> membersWithoutSelf)
         {
             var messageAreaModel = new MessageAreaModel
             {
@@ -78,14 +104,17 @@ namespace ChatJS.Data.Builders.Private
 
             foreach (var message in membership.Chatlog.Messages)
             {
-                var messageEntry = BuildMessageEntry(message, membership.User);
-                messageAreaModel.Entries.Add(messageEntry);
+                if (message.Status == MessageStatusType.Published)
+                {
+                    var messageEntry = BuildEntry(message, membership.User);
+                    messageAreaModel.Entries.Add(messageEntry);
+                }
             }
 
             return messageAreaModel;
         }
 
-        private MessageAreaModel BuildPrivateMessageAreaModel(Membership membership, User member)
+        private MessageAreaModel BuildPrivateArea(Membership membership, User member)
         {
             var messageAreaModel = new MessageAreaModel
             {
@@ -96,14 +125,17 @@ namespace ChatJS.Data.Builders.Private
 
             foreach (var message in membership.Chatlog.Messages)
             {
-                var messageEntry = BuildAnnonymousMessageEntry(message, membership.User);
-                messageAreaModel.Entries.Add(messageEntry);
+                if (message.Status == MessageStatusType.Published)
+                {
+                    var messageEntry = BuildAnnonymousEntry(message, membership.User);
+                    messageAreaModel.Entries.Add(messageEntry);
+                }
             }
 
             return messageAreaModel;
         }
 
-        private MessageEntryModel BuildMessageEntry(Message message, User context)
+        private MessageEntryModel BuildEntry(Message message, User messageContext)
         {
             return new MessageEntryModel
             {
@@ -111,18 +143,18 @@ namespace ChatJS.Data.Builders.Private
                 Content = message.Content,
                 TimeStamp = message.CreatedAt,
                 Name = message.CreatedByUser.DisplayName,
-                Origin = GetMessageOrigin(message, context)
+                Origin = GetMessageOrigin(message, messageContext)
             };
         }
 
-        private MessageEntryModel BuildAnnonymousMessageEntry(Message message, User context)
+        private MessageEntryModel BuildAnnonymousEntry(Message message, User messageContext)
         {
             return new MessageEntryModel
             {
                 Index = message.Index,
                 Content = message.Content,
                 TimeStamp = message.CreatedAt,
-                Origin = GetMessageOrigin(message, context)
+                Origin = GetMessageOrigin(message, messageContext)
             };
         }
 
@@ -141,9 +173,9 @@ namespace ChatJS.Data.Builders.Private
                 .Select(x => x.User).ToList();
         }
 
-        private static MessageOriginAttribute GetMessageOrigin(Message message, User userContext)
+        private static MessageOrigin GetMessageOrigin(Message message, User messageContext)
         {
-            return message.CreatedBy == userContext.Id ? MessageOriginAttribute.Send : MessageOriginAttribute.Received;
+            return message.CreatedBy == messageContext.Id ? MessageOrigin.Send : MessageOrigin.Received;
         }
     }
 }
