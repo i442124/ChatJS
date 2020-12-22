@@ -8,10 +8,12 @@ namespace ChatJS.Domain.Memberships
 {
     public interface IMembershipService
     {
-        Task CreateMembership(CreateMembership command);
+        Task CreateAsync(CreateMembership command);
 
-        Task DeleteMembership(DeleteMembership command);
+        Task DeleteAsync(DeleteMembership command);
 
-        Task UpdateMembership(UpdateMembership command);
+        Task<Membership> GetByIdAsync(GetMembershipById command);
+
+        Task UpdateAsync(UpdateMembership command);
     }
 }

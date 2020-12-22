@@ -1,4 +1,5 @@
 using ChatJS.Data;
+using ChatJS.Data.Builders.Private;
 using ChatJS.Data.Rules;
 using ChatJS.Data.Services;
 using ChatJS.Domain.Chatlogs;
@@ -12,6 +13,8 @@ using ChatJS.Domain.Messages.Validators;
 using ChatJS.Domain.Users;
 using ChatJS.Domain.Users.Commands;
 using ChatJS.Domain.Users.Validators;
+using ChatJS.Models.Chatlog;
+using ChatJS.Models.Messages;
 using ChatJS.WebServer;
 using ChatJS.WebServer.Hubs;
 using ChatJS.WebServer.Services;
@@ -65,6 +68,7 @@ namespace ChatJS.WebServer
         {
             services.AddScoped<IChatlogRules, ChatlogRules>();
             services.AddScoped<IChatlogService, ChatlogService>();
+            services.AddScoped<IChatlogModelBuilder, ChatlogModelBuilder>();
 
             services.AddScoped<IUserRules, UserRules>();
             services.AddScoped<IUserService, UserService>();
@@ -75,6 +79,7 @@ namespace ChatJS.WebServer
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<IValidator<CreateMessage>, CreateMessageValidator>();
             services.AddScoped<IValidator<UpdateMessage>, UpdateMessageValidator>();
+            services.AddScoped<IMessageModelBuilder, MessageModelBuilder>();
 
             services.AddScoped<IMessageRules, MessageRules>();
             services.AddScoped<IMessageService, MessageService>();

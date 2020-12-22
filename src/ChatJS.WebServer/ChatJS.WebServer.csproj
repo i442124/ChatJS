@@ -46,6 +46,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\ChatJS.Models\ChatJS.Models.csproj" />
     <ProjectReference Include="..\ChatJS.Data\ChatJS.Data.csproj" />
     <ProjectReference Include="..\ChatJS.Domain\ChatJS.Domain.csproj" />
   </ItemGroup>
@@ -57,7 +58,6 @@
   
   <ItemGroup>
     <Folder Include="Controllers\Admin\" />
-    <Folder Include="Controllers\Private\" />
   </ItemGroup>
 
   <Import Project="..\..\common.props" />

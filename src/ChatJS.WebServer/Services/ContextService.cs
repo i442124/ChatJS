@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Data;
-using ChatJS.WebServer.Models;
+using ChatJS.Models;
 
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Http;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ChatJS.WebServer.Models
+namespace ChatJS.Models
 {
     public class CurrentUserModel
     {

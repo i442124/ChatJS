@@ -27,15 +27,15 @@ namespace ChatJS.Data.Services
             _updateValidator = updateValidator;
         }
 
-        public async Task CreateMembership(CreateMembership command)
+        public async Task CreateAsync(CreateMembership command)
         {
             var result = await _createValidator.ValidateAsync(command);
             if (result.IsValid)
             {
                 var membership = new Membership
                 {
-                    ChatlogId = command.ChatlogId,
                     UserId = command.UserId,
+                    ChatlogId = command.ChatlogId,
                     Status = MembershipStatusType.Active
                 };
 
@@ -48,41 +48,43 @@ namespace ChatJS.Data.Services
             }
         }
 
-        public async Task DeleteMembership(DeleteMembership command)
+        public async Task DeleteAsync(DeleteMembership command)
         {
-            var membership = await _dbContext.Memberships
-                   .FirstOrDefaultAsync(x =>
-                       x.Status != MembershipStatusType.Suspended &&
-                       x.ChatlogId == command.ChatlogId &&
-                       x.UserId == command.UserId);
-
-            if (membership == null)
-            {
-                throw new DataException($"Membership with Chatlog '{command.ChatlogId} and User '{command.UserId}' was not found");
-            }
+            var membershipById = new GetMembershipById { ChatlogId = command.ChatlogId, UserId = command.UserId };
+            var membership = await GetByIdAsync(membershipById);
 
             membership.Status = MembershipStatusType.Suspended;
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateMembership(UpdateMembership command)
+        public async Task<Membership> GetByIdAsync(GetMembershipById command)
+        {
+            var membership = await _dbContext.Memberships
+                .FirstOrDefaultAsync(x =>
+                    x.UserId == command.UserId &&
+                    x.ChatlogId == command.ChatlogId);
+
+            if (membership == null)
+            {
+                throw new DataException($"Membership was not found.");
+            }
+            else if (membership.Status == MembershipStatusType.Suspended)
+            {
+                throw new DataException("$Membership has been suspended.");
+            }
+
+            return membership;
+        }
+
+        public async Task UpdateAsync(UpdateMembership command)
         {
             var result = await _updateValidator.ValidateAsync(command);
             if (result.IsValid)
             {
-                var membership = await _dbContext.Memberships
-                    .FirstOrDefaultAsync(x =>
-                        x.Status != MembershipStatusType.Suspended &&
-                        x.ChatlogId == command.ChatlogId &&
-                        x.UserId == command.UserId);
+                var membershipById = new GetMembershipById { ChatlogId = command.ChatlogId, UserId = command.ChatlogId };
+                var membership = await GetByIdAsync(membershipById);
 
-                if (membership == null)
-                {
-                    throw new DataException($"Membership with Chatlog '{command.ChatlogId} and User '{command.UserId}' was not found");
-                }
-
-                membership.UserId = command.UserId;
-                membership.ChatlogId = command.ChatlogId;
+                membership.Status = command.Status;
                 await _dbContext.SaveChangesAsync();
             }
         }

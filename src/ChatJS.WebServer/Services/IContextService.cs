@@ -2,8 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using ChatJS.WebServer;
-using ChatJS.WebServer.Models;
+using ChatJS.Data;
+using ChatJS.Models;
 
 namespace ChatJS.WebServer.Services
 {
