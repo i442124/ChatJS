@@ -8,6 +8,10 @@ import './HomePage.css';
 
 class HomePage extends Component {
 
+  state = {
+    idx: undefined
+  }
+
   render() {
     return (
       <div className="container-fluid p-0">
@@ -22,8 +26,10 @@ class HomePage extends Component {
               </div>
               <div className="row no-gutters flex-grow-1">
                 <div className="col">
-                  <ChatListArea />
+                  <ChatListArea onRequestChatlog={idx => this.setState({ idx: idx})} />
                 </div>
+              </div>
+              <div className="row no-gutters flex-grow-0">
               </div>
            </div>
           </div>
@@ -36,7 +42,7 @@ class HomePage extends Component {
               </div>
               <div className="row no-gutters flex-grow-1">
                 <div className="col">
-                  <MessageArea />
+                  <MessageArea id={this.state.idx} />
                 </div>
               </div>
            </div>

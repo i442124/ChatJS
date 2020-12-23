@@ -83,6 +83,7 @@ namespace ChatJS.Data.Builders.Private
                     chatlogEntryModel.TimeStamp = message.CreatedAt;
                 }
 
+                chatlogEntryModel.Id = membership.ChatlogId;
                 chatlogEntryModel.Name = membersWithoutSelf.Count > 1
                     ? string.Join(", ", membersWithoutSelf.Select(x => x.DisplayName).Append("You"))
                     : string.Join(", ", membersWithoutSelf.Select(x => x.DisplayName));

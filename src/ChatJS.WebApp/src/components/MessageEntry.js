@@ -7,7 +7,7 @@ class MessageEntry extends Component {
   render() {
 
     const attribute = this.getAttribute();
-    const { name, contents, timeStamp } = this.props;
+    const { name, content, timeStamp } = this.props;
 
     const shouldRenderName = !!name;
     const shouldRenderTime = !!timeStamp;
@@ -22,7 +22,7 @@ class MessageEntry extends Component {
         }
 
         <div className="d-inline-flex">
-          <div className="message-contents">{contents}</div>
+          <div className="message-contents">{content}</div>
           { shouldRenderTime && 
             <div className="message-time">
               {this.getLocateTimeString()}
@@ -34,13 +34,13 @@ class MessageEntry extends Component {
   }
 
   getAttribute() {
-    const { attribute} = this.props;
-    return !!attribute ? `message-item-${attribute}` : ``;
+    const { origin } = this.props;
+    return !!origin ? `message-item-${origin}` : ``;
   }
 
   getLocateTimeString() {
     const { timeStamp } = this.props;
-    return timeStamp.toLocaleTimeString(navigator.language, {
+    return new Date(timeStamp).toLocaleTimeString(navigator.language, {
       hour: 'numeric', minute: 'numeric'
     });
   }

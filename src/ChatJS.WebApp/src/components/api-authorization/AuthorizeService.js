@@ -8,6 +8,11 @@ class AuthorizeService {
     return await this._userManager.getUser();
   }
 
+  async getAccessToken() {
+    const user = await this.getUser();
+    return user && user.access_token;
+  }
+
   async signIn(returnUrl) {
 
     await this.ensureUserManagerInitialized();
@@ -78,6 +83,9 @@ class AuthorizeService {
         });
 
         this._userManager = new UserManager(settings);
+        this._userManager.events.addAccessTokenExpired(() => {
+          this._userManager.removeUser();
+        });
       }
     }
   }

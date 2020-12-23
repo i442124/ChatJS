@@ -6,6 +6,8 @@ namespace ChatJS.Models.Chatlog
 {
     public class ChatlogEntryModel
     {
+        public Guid Id { get; set; }
+
         public string Name { get; set; }
 
         public string Status { get; set; }

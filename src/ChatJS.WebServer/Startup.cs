@@ -1,3 +1,6 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 using ChatJS.Data;
 using ChatJS.Data.Builders.Private;
 using ChatJS.Data.Rules;
@@ -47,7 +50,13 @@ namespace ChatJS.WebServer
         {
             services.AddSignalR();
             services.AddRazorPages();
-            services.AddControllers();
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+                    options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                });
+
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "../ChatJS.WebApp/build";

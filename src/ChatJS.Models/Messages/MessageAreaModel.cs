@@ -14,6 +14,6 @@ namespace ChatJS.Models.Messages
 
         public string Caption { get; set; }
 
-        public List<MessageEntryModel> Entries { get; set; }
+        public IList<MessageEntryModel> Entries { get; set; }
     }
 }

@@ -99,7 +99,8 @@ namespace ChatJS.Data.Builders.Private
             {
                 Id = membership.ChatlogId,
                 Name = string.Join(", ", membersWithoutSelf.Select(x => x.DisplayName).Append("You")),
-                Caption = string.Format("{0} Members", membersWithoutSelf.Count + 1)
+                Caption = string.Format("{0} Members", membersWithoutSelf.Count + 1),
+                Entries = new List<MessageEntryModel>()
             };
 
             foreach (var message in membership.Chatlog.Messages)
@@ -120,7 +121,8 @@ namespace ChatJS.Data.Builders.Private
             {
                 Id = membership.ChatlogId,
                 Name = member.DisplayName,
-                Caption = member.DisplayNameUid
+                Caption = member.DisplayNameUid,
+                Entries = new List<MessageEntryModel>()
             };
 
             foreach (var message in membership.Chatlog.Messages)
