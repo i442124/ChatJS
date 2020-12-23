@@ -6,7 +6,7 @@ class InputArea extends Component {
 
   render() {
     return (
-      <form className="h-100 p-2">
+      <form className="d-flex flex-column">
         <div className="d-flex align-items-center">
           <div className="d-flex flex-grow-1 mx-2">
             <input 

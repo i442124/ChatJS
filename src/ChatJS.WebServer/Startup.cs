@@ -18,6 +18,7 @@ using ChatJS.Domain.Users.Commands;
 using ChatJS.Domain.Users.Validators;
 using ChatJS.Models.Chatlog;
 using ChatJS.Models.Messages;
+using ChatJS.Models.Users;
 using ChatJS.WebServer;
 using ChatJS.WebServer.Hubs;
 using ChatJS.WebServer.Services;
@@ -81,6 +82,7 @@ namespace ChatJS.WebServer
 
             services.AddScoped<IUserRules, UserRules>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserModelBuilder, UserModelBuilder>();
             services.AddScoped<IValidator<CreateUser>, CreateUserValidator>();
             services.AddScoped<IValidator<UpdateUser>, UpdateUserValidator>();
 

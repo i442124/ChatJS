@@ -25,6 +25,9 @@ export class LogoutAction extends Component {
       case LogoutActions.LoggedOut:
         this.setState({ isReady: true, message: "You successfully logged out!" });
         break;
+
+      default:
+        break;
     }
   }
 
@@ -44,6 +47,8 @@ export class LogoutAction extends Component {
       case LogoutActions.Login:
       case LogoutActions.LoginCallback:
         return (<div>Processing...</div>);
+      default:
+        return (<div></div>)
     }
   }
 

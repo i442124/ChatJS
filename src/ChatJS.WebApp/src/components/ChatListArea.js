@@ -1,9 +1,8 @@
-import { Component, Fragment } from "react";
+import { Component } from "react";
 import { AuthService } from "./api-authorization/AuthorizeService";
 
 import './ChatListArea.css';
 import './ChatListEntry.css';
-import ChatListEntry from "./ChatListEntry";
 
 class ChatListArea extends Component {
 
@@ -16,35 +15,45 @@ class ChatListArea extends Component {
     this.fetchComponentData();
   }
 
+  componentDidUpdate() {
+  }
+
   async fetchComponentData() {
-    const token = await AuthService.getAccessToken();
-    const response = await fetch(`api/private/chatlogs`, {
-      headers: !token ? {} : {'Authorization' : `Bearer ${token}` }
-    });
+
+    const request = `api/private/chatlogs`;
+    console.log('ChatListArea', {request});
+
+    const response = await AuthService.fetch(request);
+    console.log('ChatListArea', {response});
 
     const data = await response.json();
-    console.log(data);
-    this.setState({ ...data, ready: true });
+    console.log('ChatListArea', {data});
+
+    this.setState({ ...data, ready: true});
   }
 
   render() {
     const { ready, entries } = this.state;
-    const { onRequestChatlog } = this.props;
+    const { component: Component, componentSelected } = this.props;
 
     if (!ready) {
-      return (<div>Loading...</div>);
+      return <p><em>Loading...</em></p>
     }
 
     return (
-      <ul className="list-group"> {
-        entries.map((entry, idx) =>
-          <li key={`list-item-${idx}`} 
-              className="list-group-item list-group-item-action p-2"
-              onClick={() => onRequestChatlog && onRequestChatlog(entry.id)}>
-              <ChatListEntry {...entry} />
-          </li>
+      <div aria-label='chat-list-area'>
+        <ul className="list-group"> {
+          entries.map((entry, idx) =>
+            <div key={`list-item-${idx}`} 
+              aria-label='chat-list-item'>
+              <li className="list-group-item list-group-item-action p-2"
+                onClick={() => componentSelected && componentSelected({...entry})}>
+                <Component {...entry} />
+              </li>
+            </div> 
         )}
-      </ul>
+        </ul>
+      </div>
     );
   }
 }

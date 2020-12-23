@@ -69,6 +69,20 @@ class AuthorizeService {
     }
   }
 
+  async fetch(requestUrl, baseOptions) {
+    const options = { ...baseOptions};
+    const token = await this.getAccessToken();
+
+    if (!!token) {
+      options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${token}`
+      }
+    }
+
+    return await fetch(requestUrl, options);
+  }
+
   async ensureUserManagerInitialized() {
     if (this._userManager === undefined) {
 

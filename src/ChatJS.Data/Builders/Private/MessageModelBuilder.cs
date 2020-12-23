@@ -121,7 +121,7 @@ namespace ChatJS.Data.Builders.Private
             {
                 Id = membership.ChatlogId,
                 Name = member.DisplayName,
-                Caption = member.DisplayNameUid,
+                Caption = $"#{member.DisplayNameUid}",
                 Entries = new List<MessageEntryModel>()
             };
 

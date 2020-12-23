@@ -1,5 +1,4 @@
-import React, { Component, Fragment } from 'react';
-import ChatListArea from '../components/ChatListArea';
+import React, { Component } from 'react';
 
 import './Banner.css';
 import logo from '../assets/img/logo.png';

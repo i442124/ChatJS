@@ -91,6 +91,12 @@
     <Content Include="src\components\MessageEntry.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\UserArea.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\UserArea.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\index.css" />
     <Content Include="src\index.js" />
     <Content Include="src\pages\HomePage.css" />

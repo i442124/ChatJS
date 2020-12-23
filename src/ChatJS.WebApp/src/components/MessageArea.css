@@ -1,0 +1,15 @@
+[aria-label="message-area"] {
+    width: 100%;
+    height: 100%;
+    background: #e5ddd5;
+}
+
+[aria-label="message-area-header"] {
+    display: flex;
+    align-items: center;
+    background: #efefef;
+}
+
+[aria-label="message-area-footer"] {
+    background: #efefef;
+}
