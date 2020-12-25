@@ -24,7 +24,7 @@ class HomePage extends Component {
   render() {
     return (
       <div className="container-fluid p-0">
-        <div className="row flex-nowrap no-gutters vh-100">
+        <div className="row row-nowrap no-gutters vh-100">
 
           <div className="col-12 col-sm-5 col-lg-3">
             <div className="d-flex flex-column h-100">
