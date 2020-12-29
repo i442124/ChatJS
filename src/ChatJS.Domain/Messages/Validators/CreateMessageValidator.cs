@@ -1,4 +1,4 @@
-﻿using ChatJS.Domain.Chatlogs;
+﻿using ChatJS.Domain.Chatrooms;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Messages.Commands;
 using ChatJS.Domain.Users;
@@ -9,7 +9,7 @@ namespace ChatJS.Domain.Messages.Validators
 {
     public class CreateMessageValidator : AbstractValidator<CreateMessage>
     {
-        public CreateMessageValidator(IChatlogRules chatlogRules)
+        public CreateMessageValidator(IUserRules userRules)
         {
             RuleFor(c => c.Content)
                 .NotEmpty()
@@ -17,9 +17,9 @@ namespace ChatJS.Domain.Messages.Validators
                 .Length(min: 1, max: 255)
                 .WithMessage("Content must be at least 1 and at most 255 characters long.");
 
-            RuleFor(c => c.ChatlogId)
-                .MustAsync((c, id, cancellation) => chatlogRules.IsValidAsync(id))
-                .WithMessage(c => $"Chatlog '{c.ChatlogId}' is not in a valid state.");
+            RuleFor(c => c.UserId)
+                .MustAsync((id, cancellation) => userRules.IsValidAsync(id))
+                .WithMessage(c => $"User with id '{c.UserId}' does not exist.");
         }
     }
 }

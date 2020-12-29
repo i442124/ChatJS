@@ -16,28 +16,28 @@ namespace ChatJS.WebServer.Controllers.Private
     [Route("api/private/users")]
     public class UserController : Controller
     {
-        private readonly IContextService _context;
-        private readonly IUserModelBuilder _builder;
+        private readonly IContextService _contextService;
+        private readonly IUserModelBuilder _userModelBuilder;
 
         public UserController(
-            IContextService context,
-            IUserModelBuilder builder)
+            IContextService contextService,
+            IUserModelBuilder userModelBuilder)
         {
-            _context = context;
-            _builder = builder;
+            _contextService = contextService;
+            _userModelBuilder = userModelBuilder;
         }
 
         [HttpGet]
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _context.CurrentUserAsync();
-            return Json(await _builder.BuildAreaAsync(user.Id));
+            var user = await _contextService.CurrentUserAsync();
+            return Json(await _userModelBuilder.BuildAsync(user.Id));
         }
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> OnGetAsync(Guid userId)
         {
-            return Json(await _builder.BuildAreaAsync(userId));
+            return Json(await _userModelBuilder.BuildAsync(userId));
         }
     }
 }

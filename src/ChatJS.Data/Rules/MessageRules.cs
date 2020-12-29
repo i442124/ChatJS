@@ -18,12 +18,12 @@ namespace ChatJS.Data.Rules
             _dbContext = dbContext;
         }
 
-        public async Task<bool> IsValidAsync(Guid chatlogId, int index)
+        public async Task<bool> IsValidAsync(Guid id)
         {
-            var any = await _dbContext.Messages.AnyAsync(
-                message => message.Index == index &&
-                           message.ChatlogId == chatlogId &&
-                           message.Status != MessageStatusType.Deleted);
+            var any = await _dbContext.Messages
+                .AnyAsync(message =>
+                    message.Id == id &&
+                    message.Status == MessageStatusType.Published);
 
             return any;
         }

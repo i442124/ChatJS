@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ using ChatJS.Domain.Users.Commands;
 using FluentValidation;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace ChatJS.Data.Services
 {
@@ -37,7 +36,7 @@ namespace ChatJS.Data.Services
 
             if (user.Status != UserStatusType.Pending)
             {
-                throw new DataException($"User with Id '{command.Id}' is not in a pending state.");
+                throw new DataException("User is not in a pending state.");
             }
 
             user.Status = UserStatusType.Active;
@@ -46,24 +45,18 @@ namespace ChatJS.Data.Services
 
         public async Task CreateAsync(CreateUser command)
         {
-            var result = await _createValidator.ValidateAsync(command);
-            if (result.IsValid)
-            {
-                var user = new User
-                {
-                    DisplayName = command.DisplayName,
-                    DisplayNameUid = command.DisplayNameUid,
-                    IdentityUserId = command.IdentityUserId,
-                    Id = command.Id,
-                };
+            await _createValidator.ValidateAndThrowAsync(command);
 
-                await _dbContext.AddAsync(user);
-                await _dbContext.SaveChangesAsync();
-            }
-            else
+            var user = new User
             {
-                throw new ValidationException(result.Errors);
-            }
+                DisplayName = command.DisplayName,
+                DisplayNameUid = command.DisplayNameUid,
+                IdentityUserId = command.IdentityUserId,
+                Id = command.Id
+            };
+
+            await _dbContext.AddAsync(user);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(DeleteUser command)
@@ -84,7 +77,7 @@ namespace ChatJS.Data.Services
 
             if (user == null)
             {
-                throw new DataException($"User with Id '{command.Id}' was not found.");
+                throw new DataException($"User with id {command.Id} not found.");
             }
 
             return user;
@@ -93,68 +86,48 @@ namespace ChatJS.Data.Services
         public async Task<User> GetByNameAsync(GetUserByName command)
         {
             var user = await _dbContext.Users
-               .FirstOrDefaultAsync(user =>
-                   user.DisplayName == command.DisplayName &&
-                   user.DisplayNameUid == command.DisplayNameUid &&
-                   user.Status != UserStatusType.Deleted);
+                .FirstOrDefaultAsync(user =>
+                    user.DisplayName == command.DisplayName &&
+                    user.DisplayNameUid == command.DisplayNameUid &&
+                    user.Status != UserStatusType.Deleted);
 
             if (user == null)
             {
-                throw new DataException($"User with Name '{command.DisplayName}#{command.DisplayNameUid}' was not found.");
+                throw new DataException($"User '{command.DisplayName}#{command.DisplayNameUid}' not found.");
             }
 
             return user;
         }
 
+        public async Task ReinstateAsync(ReinstateUser command)
+        {
+            var userById = new GetUserById { Id = command.Id };
+            var user = await GetByIdAsync(userById);
+
+            user.Status = UserStatusType.Active;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task SuspendAsync(SuspendUser command)
+        {
+            var userById = new GetUserById { Id = command.Id };
+            var user = await GetByIdAsync(userById);
+
+            user.Status = UserStatusType.Suspended;
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task UpdateAsync(UpdateUser command)
         {
-            var result = await _updateValidator.ValidateAsync(command);
-            if (result.IsValid)
-            {
-                var userById = new GetUserById { Id = command.Id };
-                var user = await GetByIdAsync(userById);
+            await _updateValidator.ValidateAndThrowAsync(command);
 
-                user.DisplayName = command.DisplayName;
-                user.DisplayNameUid = command.DisplayNameUid;
-                await _dbContext.SaveChangesAsync();
-            }
-            else
-            {
-                throw new ValidationException(result.Errors);
-            }
-        }
+            var userById = new GetUserById { Id = command.Id };
+            var user = await GetByIdAsync(userById);
 
-        private async Task<string> GenerateDisplayName()
-        {
-            var random = new Random();
-            var displayNameFound = true;
-            var displayName = string.Empty;
+            user.DisplayName = command.DisplayName;
+            user.DisplayNameUid = command.DisplayNameUid;
 
-            while (displayNameFound)
-            {
-                displayName = $"<{random.Next()}>";
-                displayNameFound = await _dbContext.Users
-                    .AnyAsync(x => x.DisplayName == displayName);
-            }
-
-            return displayName;
-        }
-
-        private async Task<string> GenerateDisplayNameUid(string displayName)
-        {
-            var random = new Random();
-            var displayNameUidFound = true;
-            var displayNameUid = string.Empty;
-
-            while (displayNameUidFound)
-            {
-                displayNameUid = $"{random.Next(9999):D4}";
-                displayNameUidFound = await _dbContext.Users
-                    .AnyAsync(x => x.DisplayName == displayName &&
-                                   x.DisplayNameUid == displayNameUid);
-            }
-
-            return displayNameUid;
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

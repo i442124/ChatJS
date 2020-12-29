@@ -19,18 +19,54 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
-            modelBuilder.Entity("ChatJS.Domain.Chatlogs.Chatlog", b =>
+            modelBuilder.Entity("ChatJS.Domain.Chatrooms.Chatroom", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameCaption")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Chatlogs");
+                    b.ToTable("Chatrooms");
+                });
+
+            modelBuilder.Entity("ChatJS.Domain.Deliveries.Delivery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Deliveries");
                 });
 
             modelBuilder.Entity("ChatJS.Domain.Memberships.Membership", b =>
@@ -38,28 +74,27 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ChatlogId")
+                    b.Property<Guid>("ChatroomId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "ChatlogId");
+                    b.HasKey("UserId", "ChatroomId");
 
-                    b.HasIndex("ChatlogId");
+                    b.HasIndex("ChatroomId");
 
                     b.ToTable("Memberships");
                 });
 
             modelBuilder.Entity("ChatJS.Domain.Messages.Message", b =>
                 {
-                    b.Property<int>("Index")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<Guid>("ChatlogId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Attachment")
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
@@ -70,16 +105,41 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                     b.Property<Guid>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.HasKey("Index", "ChatlogId");
-
-                    b.HasIndex("ChatlogId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CreatedBy");
 
                     b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("ChatJS.Domain.Posts.Post", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChatroomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatroomId");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("ChatJS.Domain.Users.User", b =>
@@ -89,10 +149,10 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DisplayNameUid")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("IdentityUserId")
                         .HasColumnType("nvarchar(max)");
@@ -102,57 +162,98 @@ namespace ChatJS.Data.Migrations.ApplicationMigrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DisplayName", "DisplayNameUid")
+                        .IsUnique()
+                        .HasFilter("[DisplayName] IS NOT NULL AND [DisplayNameUid] IS NOT NULL");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ChatJS.Domain.Deliveries.Delivery", b =>
+                {
+                    b.HasOne("ChatJS.Domain.Messages.Message", "Message")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ChatJS.Domain.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Message");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ChatJS.Domain.Memberships.Membership", b =>
                 {
-                    b.HasOne("ChatJS.Domain.Chatlogs.Chatlog", "Chatlog")
+                    b.HasOne("ChatJS.Domain.Chatrooms.Chatroom", "Chatroom")
                         .WithMany("Memberships")
-                        .HasForeignKey("ChatlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("ChatroomId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("ChatJS.Domain.Users.User", "User")
                         .WithMany("Memberships")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Chatlog");
+                    b.Navigation("Chatroom");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("ChatJS.Domain.Messages.Message", b =>
                 {
-                    b.HasOne("ChatJS.Domain.Chatlogs.Chatlog", "Chatlog")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChatlogId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ChatJS.Domain.Users.User", "CreatedByUser")
-                        .WithMany()
+                        .WithMany("Messages")
                         .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Chatlog");
 
                     b.Navigation("CreatedByUser");
                 });
 
-            modelBuilder.Entity("ChatJS.Domain.Chatlogs.Chatlog", b =>
+            modelBuilder.Entity("ChatJS.Domain.Posts.Post", b =>
+                {
+                    b.HasOne("ChatJS.Domain.Chatrooms.Chatroom", "Chatroom")
+                        .WithMany("Posts")
+                        .HasForeignKey("ChatroomId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ChatJS.Domain.Messages.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Chatroom");
+
+                    b.Navigation("Message");
+                });
+
+            modelBuilder.Entity("ChatJS.Domain.Chatrooms.Chatroom", b =>
                 {
                     b.Navigation("Memberships");
 
-                    b.Navigation("Messages");
+                    b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("ChatJS.Domain.Messages.Message", b =>
+                {
+                    b.Navigation("Deliveries");
                 });
 
             modelBuilder.Entity("ChatJS.Domain.Users.User", b =>
                 {
                     b.Navigation("Memberships");
+
+                    b.Navigation("Messages");
                 });
 #pragma warning restore 612, 618
         }

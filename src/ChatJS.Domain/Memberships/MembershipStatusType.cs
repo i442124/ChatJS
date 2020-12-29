@@ -2,8 +2,10 @@
 {
     public enum MembershipStatusType
     {
-        Active = 0,
+        None,
 
-        Suspended = 1,
+        Active,
+
+        Suspended,
     }
 }

@@ -2,23 +2,28 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using ChatJS.Data;
-using ChatJS.Data.Builders.Private;
+using ChatJS.Data.Builders;
+using ChatJS.Data.Caching;
 using ChatJS.Data.Rules;
 using ChatJS.Data.Services;
-using ChatJS.Domain.Chatlogs;
-using ChatJS.Domain.Chatlogs.Commands;
+
+using ChatJS.Domain.Chatrooms;
+using ChatJS.Domain.Chatrooms.Commands;
+using ChatJS.Domain.Chatrooms.Validators;
 using ChatJS.Domain.Memberships;
-using ChatJS.Domain.Memberships.Commands;
-using ChatJS.Domain.Memberships.Validators;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Messages.Commands;
 using ChatJS.Domain.Messages.Validators;
 using ChatJS.Domain.Users;
 using ChatJS.Domain.Users.Commands;
 using ChatJS.Domain.Users.Validators;
-using ChatJS.Models.Chatlog;
+
+using ChatJS.Models.Chatlogs;
+using ChatJS.Models.Chatrooms;
+using ChatJS.Models.Deliveries;
 using ChatJS.Models.Messages;
 using ChatJS.Models.Users;
+
 using ChatJS.WebServer;
 using ChatJS.WebServer.Hubs;
 using ChatJS.WebServer.Services;
@@ -29,7 +34,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.SpaServices;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -64,8 +68,39 @@ namespace ChatJS.WebServer
             });
 
             ConfigureWebServices(services);
+            ConfigureModelServices(services);
             ConfigureDomainServices(services);
             ConfigureDatabaseServices(services);
+        }
+
+        public void ConfigureDomainServices(IServiceCollection services)
+        {
+            services.AddScoped<IChatroomRules, ChatroomRules>();
+            services.AddScoped<IChatroomService, ChatroomService>();
+            services.AddScoped<IValidator<CreateChatroom>, CreateChatroomValidator>();
+            services.AddScoped<IValidator<UpdateChatroom>, UpdateChatroomValidator>();
+
+            services.AddScoped<IUserRules, UserRules>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IValidator<CreateUser>, CreateUserValidator>();
+            services.AddScoped<IValidator<UpdateUser>, UpdateUserValidator>();
+
+            services.AddScoped<IMembershipRules, MembershipRules>();
+            services.AddScoped<IMembershipService, MembershipService>();
+
+            services.AddScoped<IMessageRules, MessageRules>();
+            services.AddScoped<IMessageService, MessageService>();
+            services.AddScoped<IValidator<CreateMessage>, CreateMessageValidator>();
+            services.AddScoped<IValidator<UpdateMessage>, UpdateMessageValidator>();
+        }
+
+        public void ConfigureModelServices(IServiceCollection services)
+        {
+            services.AddScoped<IChatlogModelBuilder, ChatlogModelBuilder>();
+            services.AddScoped<IChatroomModelBuilder, ChatroomModelBuilder>();
+            services.AddScoped<IDeliveryModelBuilder, DeliveryModelBuilder>();
+            services.AddScoped<IMessageModelBuilder, MessageModelBuilder>();
+            services.AddScoped<IUserModelBuilder, UserModelBuilder>();
         }
 
         public void ConfigureWebServices(IServiceCollection services)
@@ -74,32 +109,10 @@ namespace ChatJS.WebServer
             services.AddScoped<IIntegrityService, IntegrityService>();
         }
 
-        public void ConfigureDomainServices(IServiceCollection services)
-        {
-            services.AddScoped<IChatlogRules, ChatlogRules>();
-            services.AddScoped<IChatlogService, ChatlogService>();
-            services.AddScoped<IChatlogModelBuilder, ChatlogModelBuilder>();
-
-            services.AddScoped<IUserRules, UserRules>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserModelBuilder, UserModelBuilder>();
-            services.AddScoped<IValidator<CreateUser>, CreateUserValidator>();
-            services.AddScoped<IValidator<UpdateUser>, UpdateUserValidator>();
-
-            services.AddScoped<IMembershipRules, MembershipRules>();
-            services.AddScoped<IMembershipService, MembershipService>();
-            services.AddScoped<IValidator<CreateMessage>, CreateMessageValidator>();
-            services.AddScoped<IValidator<UpdateMessage>, UpdateMessageValidator>();
-            services.AddScoped<IMessageModelBuilder, MessageModelBuilder>();
-
-            services.AddScoped<IMessageRules, MessageRules>();
-            services.AddScoped<IMessageService, MessageService>();
-            services.AddScoped<IValidator<CreateMembership>, CreateMembershipValidator>();
-            services.AddScoped<IValidator<UpdateMembership>, UpdateMembershipValidator>();
-        }
-
         public void ConfigureDatabaseServices(IServiceCollection services)
         {
+            services.AddScoped<ICacheManager, CacheManager>();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString:
                     Configuration.GetConnectionString("DefaultConnection")));

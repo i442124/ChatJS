@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Models;
-using ChatJS.Models.Chatlog;
+using ChatJS.Models.Chatlogs;
 using ChatJS.WebServer.Services;
 
 using Microsoft.AspNetCore.Authorization;
@@ -16,29 +16,22 @@ namespace ChatJS.WebServer.Controllers.Private
     [Route("api/private/chatlogs")]
     public class ChatlogController : Controller
     {
-        private readonly IContextService _context;
-        private readonly IChatlogModelBuilder _builder;
+        private readonly IContextService _contextService;
+        private readonly IChatlogModelBuilder _chatlogModelBuilder;
 
         public ChatlogController(
-            IContextService context,
-            IChatlogModelBuilder builder)
+            IContextService contextService,
+            IChatlogModelBuilder chatroomBuilder)
         {
-            _context = context;
-            _builder = builder;
+            _contextService = contextService;
+            _chatlogModelBuilder = chatroomBuilder;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> OnGetAsync()
+        [HttpGet("{chatroomId}")]
+        public async Task<IActionResult> OnGetAsync(Guid chatroomId)
         {
-            var user = await _context.CurrentUserAsync();
-            return Json(await _builder.BuildAreaAsync(user.Id));
-        }
-
-        [HttpGet("{chatlogId}")]
-        public async Task<IActionResult> OnGetAsync(Guid chatlogId)
-        {
-            var user = await _context.CurrentUserAsync();
-            return Json(await _builder.BuildEntryAsync(user.Id, chatlogId));
+            var user = await _contextService.CurrentUserAsync();
+            return Json(await _chatlogModelBuilder.BuildAsync(user.Id, chatroomId));
         }
     }
 }

@@ -8,7 +8,7 @@ class ChatListEntry extends Component {
 
   render() {
     const { name } = this.props;
-    const { caption, status } = this.props;
+    const { nameCaption, status } = this.props;
 
     return(
       <div className="d-flex flex-column">
@@ -26,7 +26,7 @@ class ChatListEntry extends Component {
           <div className="col-auto">
             <div className="d-flex flex-column">
               <h5 className="text-muted text-turncate m-0 font-weight-bold">{name}</h5>
-              <h6 className="text-muted text-turncate m-0 font-weight-normal">{caption}</h6>
+              <h6 className="text-muted text-turncate m-0 font-weight-normal">{nameCaption}</h6>
             </div>
           </div>
 

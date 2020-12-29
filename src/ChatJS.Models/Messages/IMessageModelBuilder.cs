@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,8 +9,8 @@ namespace ChatJS.Models.Messages
 {
     public interface IMessageModelBuilder
     {
-        Task<MessageAreaModel> BuildAreaAsync(Guid userId, Guid chatlogId);
+        Task<MessageReadDto> BuildAsync(Guid userId, Guid messageId);
 
-        Task<MessageEntryModel> BuildEntryAsync(Guid userId, Guid chatlogId, int index);
+        Task<List<MessageReadDto>> BuildAllAsync(Guid userId, Guid chatroomId);
     }
 }

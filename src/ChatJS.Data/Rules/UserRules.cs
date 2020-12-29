@@ -20,28 +20,31 @@ namespace ChatJS.Data.Rules
 
         public async Task<bool> IsValidAsync(Guid id)
         {
-            var any = await _dbContext.Users.AnyAsync(
-                user => user.Status != UserStatusType.Deleted &&
-                        user.Id == id);
+            var any = await _dbContext.Users
+                .AnyAsync(user =>
+                    user.Id == id &&
+                    user.Status == UserStatusType.Active);
 
             return any;
         }
 
         public async Task<bool> IsDisplayNameUniqueAsync(string displayName)
         {
-            var any = await _dbContext.Users.AnyAsync(
-                user => user.DisplayName == displayName &&
-                        user.Status != UserStatusType.Deleted);
+            var any = await _dbContext.Users
+                .AnyAsync(user =>
+                    user.DisplayName == displayName &&
+                    user.Status != UserStatusType.Deleted);
 
             return !any;
         }
 
         public async Task<bool> IsDisplayNameUniqueAsync(string displayName, string displayNameUid)
         {
-            var any = await _dbContext.Users.AnyAsync(
-                user => user.DisplayName == displayName &&
-                        user.DisplayNameUid == displayNameUid &&
-                        user.Status != UserStatusType.Deleted);
+            var any = await _dbContext.Users
+                .AnyAsync(user =>
+                    user.DisplayName == displayName &&
+                    user.DisplayNameUid == displayNameUid &&
+                    user.Status != UserStatusType.Deleted);
 
             return !any;
         }

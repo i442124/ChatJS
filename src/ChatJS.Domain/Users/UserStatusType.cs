@@ -2,10 +2,14 @@
 {
     public enum UserStatusType
     {
-        Pending = 0,
+        None,
 
-        Active = 1,
+        Pending,
 
-        Deleted = 2
+        Suspended,
+
+        Active,
+
+        Deleted
     }
 }

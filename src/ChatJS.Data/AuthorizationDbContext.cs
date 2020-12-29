@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Reflection;
 
-using ChatJS.Domain;
-using ChatJS.Domain.Chatlogs;
-using ChatJS.Domain.Messages;
-
 using IdentityServer4.EntityFramework;
 using IdentityServer4.EntityFramework.Options;
 

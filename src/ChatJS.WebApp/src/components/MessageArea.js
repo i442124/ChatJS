@@ -9,9 +9,8 @@ class MessageArea extends Component {
   state = {
     ready: false,
     id: undefined,
-    name: undefined,
-    caption: undefined,
-    entries: undefined
+    chatroom: undefined,
+    messages: undefined
   }
 
   componentDidMount() {
@@ -27,7 +26,7 @@ class MessageArea extends Component {
     return !!props.id && props.id !== id;
   }
 
-  getLocaleMessages(entries) {
+  getLocalMessages(entries) {
 
     var currentDay = undefined;
     var previousDay = undefined;
@@ -36,7 +35,7 @@ class MessageArea extends Component {
     if (!!entries) {
       entries.forEach(entry => {
         currentDay = new Date(entry.timeStamp).getDay();
-        if (previousDay === undefined || previousDay != currentDay) {
+        if (previousDay === undefined || previousDay !== currentDay) {
           messages.push({ content: this.getLocaleDateString(entry.timeStamp)});
           previousDay = currentDay;
         }
@@ -44,6 +43,7 @@ class MessageArea extends Component {
       });
     }
 
+    console.log(messages);
     return messages;
   }
 
@@ -52,9 +52,9 @@ class MessageArea extends Component {
       navigator.language, { day: 'numeric', month: 'numeric', year: 'numeric' });
   }
 
-  async fetchComponentData(chatlogId) {
+  async fetchComponentData(chatroomId) {
 
-    const request = `api/private/messages/${chatlogId}`;
+    const request = `api/private/chatlogs/${chatroomId}`;
     console.log('MessageArea', { request });
 
     const response = await AuthService.fetch(request);
@@ -63,26 +63,26 @@ class MessageArea extends Component {
     const data = await response.json();
     console.log('MessageArea', { data });
 
-    this.setState({ ...data, ready: true});
+    this.setState({ ...data, id: chatroomId, ready: true});
   }
 
   render() {
-    const { ready, name, caption, entries } = this.state;
+    const { ready, chatroom, messages } = this.state;
     const { component: ComponentBody, componentHeader: ComponentHeader, componentFooter: ComponentFooter } = this.props;
-    const messages = this.getLocaleMessages(entries);
+    const localMessages = this.getLocalMessages(messages);
 
     return(
       <div aria-label="message-area">
         <div className="d-flex flex-column h-100">
           <div className="row no-gutters flex-grow-0">
             <div className="col p-2" aria-label="message-area-header">
-              <ComponentHeader name={name} caption={caption} />
+              <ComponentHeader {...chatroom} />
             </div>
           </div>
           <div className="row no-gutters flex-grow-1">
             <div className="col p-2" aria-label="message-area-body">
               <div className="d-flex flex-column">
-                {ready && messages.map((entry, idx) =>
+                {ready && localMessages.map((entry, idx) =>
                   <ComponentBody {...entry} />
                 )}
               </div>

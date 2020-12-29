@@ -99,6 +99,7 @@ class AuthorizeService {
         this._userManager = new UserManager(settings);
         this._userManager.events.addAccessTokenExpired(() => {
           this._userManager.removeUser();
+          window.location.reload();
         });
       }
     }

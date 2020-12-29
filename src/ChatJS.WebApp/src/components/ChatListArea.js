@@ -20,7 +20,7 @@ class ChatListArea extends Component {
 
   async fetchComponentData() {
 
-    const request = `api/private/chatlogs`;
+    const request = `api/private/chatrooms`;
     console.log('ChatListArea', {request});
 
     const response = await AuthService.fetch(request);
@@ -29,7 +29,7 @@ class ChatListArea extends Component {
     const data = await response.json();
     console.log('ChatListArea', {data});
 
-    this.setState({ ...data, ready: true});
+    this.setState({ entries: data, ready: true});
   }
 
   render() {

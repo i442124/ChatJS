@@ -11,7 +11,7 @@ namespace ChatJS.Domain.Users.Validators
         {
             RuleFor(c => c.IdentityUserId)
                 .NotEmpty()
-                .WithMessage("UserId is required.");
+                .WithMessage("User Identity is required.");
 
             RuleFor(c => c.DisplayName)
                .NotEmpty()
@@ -23,9 +23,11 @@ namespace ChatJS.Domain.Users.Validators
                 .NotEmpty()
                 .WithMessage("DisplayNameUid is required.")
                 .Length(exactLength: 4)
-                .WithMessage("Display name must be exactly 4 numbers long.")
-                .MustAsync((c, d, cancellation) => rules.IsDisplayNameUniqueAsync(c.DisplayName, d))
-                .WithMessage(c => $"A user with display name uid {c.DisplayName}#{c.DisplayNameUid} already exists.");
+                .WithMessage("Display name uid must be exactly 4 numbers long.");
+
+            RuleFor(c => c)
+                .MustAsync((c, cancellation) => rules.IsDisplayNameUniqueAsync(c.DisplayName, c.DisplayNameUid))
+                .WithMessage(c => $"User ${c.DisplayName}#{c.DisplayNameUid} already exists.");
         }
     }
 }

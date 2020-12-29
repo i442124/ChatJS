@@ -1,4 +1,4 @@
-﻿using ChatJS.Domain.Chatlogs;
+﻿using ChatJS.Domain.Chatrooms;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Messages.Commands;
 using ChatJS.Domain.Users;
@@ -17,9 +17,9 @@ namespace ChatJS.Domain.Messages.Validators
                 .Length(min: 1, max: 255)
                 .WithMessage("Content must be at least 1 and at most 255 characters long.");
 
-            RuleFor(c => c)
-                .MustAsync((c, _, cancallation) => rules.IsValidAsync(c.ChatlogId, c.Index))
-                .WithMessage(c => $"Message '{c.Index}' in {c.ChatlogId} is not in a valid state.");
+            RuleFor(c => c.Id)
+                .MustAsync((id, cancellation) => rules.IsValidAsync(id))
+                .WithMessage(c => $"Message with id '{c.Id}' does not exist.");
         }
     }
 }

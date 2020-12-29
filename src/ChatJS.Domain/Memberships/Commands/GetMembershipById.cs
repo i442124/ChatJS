@@ -6,6 +6,6 @@ namespace ChatJS.Domain.Memberships.Commands
     {
         public Guid UserId { get; set; }
 
-        public Guid ChatlogId { get; set; }
+        public Guid ChatroomId { get; set; }
     }
 }

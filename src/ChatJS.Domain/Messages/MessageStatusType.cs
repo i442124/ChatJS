@@ -2,10 +2,10 @@
 {
     public enum MessageStatusType
     {
-        Send = 0,
+        None,
 
-        Deleted = 1,
+        Deleted,
 
-        Published = 2,
+        Published,
     }
 }

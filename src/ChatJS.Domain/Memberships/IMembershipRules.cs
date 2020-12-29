@@ -6,6 +6,6 @@ namespace ChatJS.Domain.Memberships
 {
     public interface IMembershipRules
     {
-        Task<bool> IsValidAsync(Guid userId, Guid chatlogId);
+        Task<bool> IsValidAsync(Guid userId, Guid chatroomId);
     }
 }

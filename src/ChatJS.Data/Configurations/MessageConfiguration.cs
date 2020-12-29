@@ -12,17 +12,19 @@ namespace ChatJS.Data.Configurations
         public void Configure(EntityTypeBuilder<Message> builder)
         {
             builder.ToTable("Messages");
-            builder.HasKey(x => new { x.Index, x.ChatlogId });
+            builder.Property(x => x.Content).IsRequired();
+
+            builder
+                .HasMany(x => x.Deliveries)
+                .WithOne(x => x.Message)
+                .HasForeignKey(x => x.MessageId);
 
             builder
                 .HasOne(x => x.CreatedByUser)
-                .WithMany(navigationName: null)
-                .HasForeignKey(x => x.CreatedBy);
-
-            builder
-                .HasOne(x => x.Chatlog)
                 .WithMany(x => x.Messages)
-                .HasForeignKey(x => x.ChatlogId);
+                .HasForeignKey(x => x.CreatedBy)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
     }
 }

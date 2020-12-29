@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data;
-using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Domain;
@@ -10,7 +9,6 @@ using ChatJS.Domain.Messages.Commands;
 using FluentValidation;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ChatJS.Data.Services
 {
@@ -32,60 +30,56 @@ namespace ChatJS.Data.Services
 
         public async Task CreateAsync(CreateMessage command)
         {
-            var result = await _createValidator.ValidateAsync(command);
-            if (result.IsValid)
-            {
-                var message = new Message
-                {
-                    ChatlogId = command.ChatlogId,
-                    CreatedAt = DateTime.UtcNow,
-                    CreatedBy = command.UserId,
-                    Content = command.Content,
-                    Status = MessageStatusType.Published
-                };
+            await _createValidator.ValidateAndThrowAsync(command);
 
-                await _dbContext.Messages.AddAsync(message);
-                await _dbContext.SaveChangesAsync();
-            }
-            else
+            var message = new Message
             {
-                throw new ValidationException(result.Errors);
-            }
+                Attachment = command.Attachment,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = command.UserId,
+                Content = command.Content,
+                Id = command.Id,
+                Status = MessageStatusType.Published
+            };
+
+            await _dbContext.AddAsync(message);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(DeleteMessage command)
         {
-            var message = await _dbContext.Messages
-                  .FirstOrDefaultAsync(message =>
-                      message.Status != MessageStatusType.Deleted &&
-                      message.ChatlogId == command.ChatlogId &&
-                      message.Index == command.Index);
-
-            if (message == null)
-            {
-                throw new DataException($"Message '{command.Index}' in '{command.ChatlogId} was not found.");
-            }
+            var messageById = new GetMessageById { Id = command.Id };
+            var message = await GetByIdAsync(messageById);
 
             message.Status = MessageStatusType.Deleted;
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(UpdateMessage command)
+        public async Task<Message> GetByIdAsync(GetMessageById command)
         {
             var message = await _dbContext.Messages
-                  .FirstOrDefaultAsync(message =>
-                      message.Status != MessageStatusType.Deleted &&
-                      message.ChatlogId == command.ChatlogId &&
-                      message.Index == command.Index);
+                .FirstOrDefaultAsync(message =>
+                    message.Id == command.Id &&
+                    message.Status != MessageStatusType.Deleted);
 
             if (message == null)
             {
-                throw new DataException($"Message '{command.Index}' in '{command.ChatlogId} was not found.");
+                throw new DataException($"Message with id {command.Id} not found.");
             }
 
+            return message;
+        }
+
+        public async Task UpdateAsync(UpdateMessage command)
+        {
+            await _updateValidator.ValidateAndThrowAsync(command);
+
+            var mesasgeById = new GetMessageById { Id = command.Id };
+            var message = await GetByIdAsync(mesasgeById);
+
+            message.Attachment = command.Attachment;
             message.Content = command.Content;
-            message.CreatedAt = DateTime.UtcNow;
-            message.CreatedBy = command.UserId;
+            message.ModifiedAt = DateTime.UtcNow;
 
             await _dbContext.SaveChangesAsync();
         }

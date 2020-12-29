@@ -10,10 +10,8 @@ namespace ChatJS.Domain.Memberships
     {
         Task CreateAsync(CreateMembership command);
 
-        Task DeleteAsync(DeleteMembership command);
+        Task SuspendAsync(SuspendMembership command);
 
-        Task<Membership> GetByIdAsync(GetMembershipById command);
-
-        Task UpdateAsync(UpdateMembership command);
+        Task ReinstateAsync(ReinstateMembership command);
     }
 }
