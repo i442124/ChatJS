@@ -89,7 +89,7 @@ class MessageArea extends Component {
           <div className="row no-gutters flex-grow-0">
             <div className="col p-2" aria-label="message-area-footer">
               <div className="d-flex flex-column">
-                <ComponentFooter />
+                <ComponentFooter chatroom={chatroom} />
               </div>
             </div>
           </div>

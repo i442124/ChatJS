@@ -1,4 +1,6 @@
-﻿using ChatJS.Domain;
+﻿using System;
+
+using ChatJS.Domain;
 using ChatJS.Domain.Messages;
 
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,16 @@ namespace ChatJS.Data.Configurations
         {
             builder.ToTable("Messages");
             builder.Property(x => x.Content).IsRequired();
+
+            builder
+                .Property(x => x.CreatedAt)
+                .HasConversion(x => x, x =>
+                    DateTime.SpecifyKind(x, DateTimeKind.Utc));
+
+            builder
+                .Property(x => x.ModifiedAt)
+                .HasConversion(x => x, x => x == null ? null :
+                    DateTime.SpecifyKind(x.Value, DateTimeKind.Utc));
 
             builder
                 .HasMany(x => x.Deliveries)

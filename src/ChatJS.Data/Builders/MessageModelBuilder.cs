@@ -30,7 +30,7 @@ namespace ChatJS.Data.Builders
             {
                 var message = await _dbContext.Messages
                     .Where(x => x.Id == messageId)
-                    .Where(x => x.Status != MessageStatusType.Deleted)
+                    .Where(x => x.Status == MessageStatusType.Published)
                     .Include(x => x.Deliveries)
                     .FirstOrDefaultAsync();
 

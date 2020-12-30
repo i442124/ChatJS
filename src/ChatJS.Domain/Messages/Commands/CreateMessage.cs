@@ -10,6 +10,6 @@ namespace ChatJS.Domain.Messages.Commands
 
         public string Content { get; set; }
 
-        public byte[] Attachment { get; set; } = null;
+        public byte[] Attachment { get; set; }
     }
 }

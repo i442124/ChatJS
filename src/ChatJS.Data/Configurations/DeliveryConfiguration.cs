@@ -1,4 +1,6 @@
-﻿using ChatJS.Domain;
+﻿using System;
+
+using ChatJS.Domain;
 using ChatJS.Domain.Deliveries;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +14,16 @@ namespace ChatJS.Data.Configurations
         public void Configure(EntityTypeBuilder<Delivery> builder)
         {
             builder.ToTable("Deliveries");
+
+            builder
+                .Property(x => x.ReadAt)
+                .HasConversion(x => x, x =>
+                    DateTime.SpecifyKind(x, DateTimeKind.Utc));
+
+            builder
+                .Property(x => x.ReceivedAt)
+                .HasConversion(x => x, x =>
+                    DateTime.SpecifyKind(x, DateTimeKind.Utc));
 
             builder
                 .HasOne(x => x.Message)

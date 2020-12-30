@@ -14,6 +14,7 @@ using ChatJS.Domain.Memberships;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Messages.Commands;
 using ChatJS.Domain.Messages.Validators;
+using ChatJS.Domain.Posts;
 using ChatJS.Domain.Users;
 using ChatJS.Domain.Users.Commands;
 using ChatJS.Domain.Users.Validators;
@@ -86,6 +87,9 @@ namespace ChatJS.WebServer
 
             services.AddScoped<IMembershipRules, MembershipRules>();
             services.AddScoped<IMembershipService, MembershipService>();
+
+            services.AddScoped<IPostRules, PostRules>();
+            services.AddScoped<IPostService, PostService>();
 
             services.AddScoped<IMessageRules, MessageRules>();
             services.AddScoped<IMessageService, MessageService>();

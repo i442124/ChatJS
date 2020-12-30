@@ -75,6 +75,7 @@ namespace ChatJS.Data.Builders
                     .Where(x => x.Status == PostStatusType.Published)
                         .Include(x => x.Message)
                         .ThenInclude(x => x.Deliveries)
+                        .OrderBy(x => x.Message.CreatedAt)
                         .ToListAsync();
 
                 return new ChatlogPageModel
