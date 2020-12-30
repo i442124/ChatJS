@@ -31,13 +31,13 @@ namespace ChatJS.WebServer.Controllers.Private
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _contextService.CurrentUserAsync();
-            return Json(await _userModelBuilder.BuildAsync(user.Id));
+            return Json(await _userModelBuilder.BuildUserPageModelAsync(user.Id));
         }
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> OnGetAsync(Guid userId)
         {
-            return Json(await _userModelBuilder.BuildAsync(userId));
+            return Json(await _userModelBuilder.BuildUserModelAsync(userId));
         }
     }
 }

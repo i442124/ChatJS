@@ -37,6 +37,7 @@
 }
 
 .message-name {
+    text-align: left;
     font-size: small;
     font-weight: bold;
 }

@@ -8,7 +8,7 @@ class ChatListArea extends Component {
 
   state = {
     ready: false,
-    entries: undefined
+    chatrooms: undefined
   }
 
   componentDidMount() {
@@ -21,19 +21,19 @@ class ChatListArea extends Component {
   async fetchComponentData() {
 
     const request = `api/private/chatrooms`;
-    console.log('ChatListArea', {request});
+    console.log('ChatListArea', request);
 
     const response = await AuthService.fetch(request);
-    console.log('ChatListArea', {response});
+    console.log('ChatListArea', response);
 
     const data = await response.json();
-    console.log('ChatListArea', {data});
+    console.log('ChatListArea', data);
 
-    this.setState({ entries: data, ready: true});
+    this.setState({ ...data, ready: true});
   }
 
   render() {
-    const { ready, entries } = this.state;
+    const { ready, chatrooms } = this.state;
     const { component: Component, componentSelected } = this.props;
 
     if (!ready) {
@@ -43,12 +43,12 @@ class ChatListArea extends Component {
     return (
       <div aria-label='chat-list-area'>
         <ul className="list-group"> {
-          entries.map((entry, idx) =>
+          chatrooms.map((chatroom, idx) =>
             <div key={`list-item-${idx}`} 
               aria-label='chat-list-item'>
               <li className="list-group-item list-group-item-action p-2"
-                onClick={() => componentSelected && componentSelected({...entry})}>
-                <Component {...entry} />
+                onClick={() => componentSelected && componentSelected({...chatroom})}>
+                <Component {...chatroom} />
               </li>
             </div> 
         )}

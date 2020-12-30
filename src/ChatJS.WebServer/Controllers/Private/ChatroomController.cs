@@ -17,28 +17,28 @@ namespace ChatJS.WebServer.Controllers.Private
     public class ChatroomController : Controller
     {
         private readonly IContextService _contextService;
-        private readonly IChatroomModelBuilder _chatroomBuilder;
+        private readonly IChatroomModelBuilder _chatroomModelBuilder;
 
         public ChatroomController(
             IContextService contextService,
-            IChatroomModelBuilder chatroomBuilder)
+            IChatroomModelBuilder chatroomModelBuilder)
         {
             _contextService = contextService;
-            _chatroomBuilder = chatroomBuilder;
+            _chatroomModelBuilder = chatroomModelBuilder;
         }
 
         [HttpGet]
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _contextService.CurrentUserAsync();
-            return Json(await _chatroomBuilder.BuildAllAsync(user.Id));
+            return Json(await _chatroomModelBuilder.BuildChatroomPageModelAsync(user.Id));
         }
 
         [HttpGet("{chatlogId}")]
         public async Task<IActionResult> OnGetAsync(Guid chatroomId)
         {
             var user = await _contextService.CurrentUserAsync();
-            return Json(await _chatroomBuilder.BuildAsync(user.Id, chatroomId));
+            return Json(await _chatroomModelBuilder.BuildChatroomModelAsync(user.Id, chatroomId));
         }
     }
 }

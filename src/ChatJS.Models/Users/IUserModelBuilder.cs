@@ -5,6 +5,8 @@ namespace ChatJS.Models.Users
 {
     public interface IUserModelBuilder
     {
-        Task<UserReadDto> BuildAsync(Guid userId);
+        Task<UserPageModel> BuildUserPageModelAsync(Guid userId);
+
+        Task<UserPageModel.UserModel> BuildUserModelAsync(Guid userId);
     }
 }

@@ -13,12 +13,8 @@ import InputArea from '../components/InputArea';
 class HomePage extends Component {
 
   state = {
-    currentChatlog: undefined,
-    currentMessage: undefined,
-  }
-
-  setChatlog(chatlog) {
-    this.setState({ currentChatlog: chatlog });
+    chatroom: undefined,
+    message: undefined,
   }
 
   render() {
@@ -37,7 +33,7 @@ class HomePage extends Component {
                 <div className="col">
                   <ChatListArea
                     component={ChatListEntry}
-                    componentSelected={e => this.setChatlog(e)} />
+                    componentSelected={e => this.setState({ chatroom: e })} />
                 </div>
               </div>
               <div className="row no-gutters flex-grow-0">
@@ -52,7 +48,8 @@ class HomePage extends Component {
 
           <div className="col-12 col-sm-7 col-lg-9">
             <div className="d-flex flex-column h-100">
-              <MessageArea {...this.state.currentChatlog}
+              <MessageArea 
+                chatroom={this.state.chatroom}
                 component={MessageEntry}
                 componentFooter={InputArea}
                 componentHeader={ChatListEntry}

@@ -7,17 +7,17 @@ class MessageEntry extends Component {
 
   render() {
 
-    const { name, content, timeStamp, origin } = this.props;
+    const { creator, content, timeStamp, origin } = this.props;
     const messageAttribute = this.getMessageAttribute(origin);
 
-    const shouldRenderName = !!name;
+    const shouldRenderName = !!creator;
     const shouldRenderTime = !!timeStamp;
 
     return (
       <div className={`message-item ${messageAttribute}`}>
         { shouldRenderName &&
           <div className="message-name">
-            {name}
+            {creator.name}
           </div>
         }
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
+using ChatJS.Data;
 using ChatJS.Data.Caching;
+using ChatJS.Domain.Memberships;
 using ChatJS.Domain.Users;
-using ChatJS.Models;
 using ChatJS.Models.Users;
 
 using Microsoft.EntityFrameworkCore;
@@ -25,27 +25,48 @@ namespace ChatJS.Data.Builders
             _cacheManager = cacheManager;
         }
 
-        public Task<UserReadDto> BuildAsync(Guid userId)
+        public async Task<UserPageModel> BuildUserPageModelAsync(Guid userId)
         {
-            return _cacheManager.GetOrSetAsync(CacheKeyCollection.User(userId), async () =>
+            return await _cacheManager.GetOrSetAsync(CacheKeyCollection.User(userId), async () =>
             {
                 var user = await _dbContext.Users
                     .Where(x => x.Id == userId)
                     .Where(x => x.Status == UserStatusType.Active)
-                    .FirstOrDefaultAsync();
+                        .Include(x => x.Memberships)
+                        .FirstOrDefaultAsync();
 
-                if (user == null)
+                return new UserPageModel
                 {
-                    return null;
-                }
-
-                return new UserReadDto
-                {
-                    Id = user.Id,
                     Name = user.DisplayName,
+                    NameUid = user.DisplayNameUid,
                     NameCaption = user.DisplayNameUid,
+
+                    Chatrooms = user.Memberships
+                        .Where(x => x.Status == MembershipStatusType.Active)
+                        .Select(x => new UserPageModel.ChatroomModel { Id = x.ChatroomId })
+                        .ToList()
                 };
             });
+        }
+
+        public async Task<UserPageModel.UserModel> BuildUserModelAsync(Guid userId)
+        {
+            var user = await _dbContext.Users
+                .Where(x => x.Id == userId)
+                .Where(x => x.Status == UserStatusType.Active)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            return new UserPageModel.UserModel
+            {
+                Name = user.DisplayName,
+                NameUid = user.DisplayNameUid,
+                NameCaption = user.DisplayNameUid
+            };
         }
     }
 }

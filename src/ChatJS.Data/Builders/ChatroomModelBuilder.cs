@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Data.Caching;
@@ -10,7 +8,6 @@ using ChatJS.Domain.Chatrooms;
 using ChatJS.Domain.Memberships;
 using ChatJS.Domain.Users;
 using ChatJS.Models.Chatrooms;
-using ChatJS.Models.Users;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -19,108 +16,109 @@ namespace ChatJS.Data.Builders
     public class ChatroomModelBuilder : IChatroomModelBuilder
     {
         private readonly ICacheManager _cacheManager;
-        private readonly IUserModelBuilder _userBuilder;
         private readonly ApplicationDbContext _dbContext;
 
         public ChatroomModelBuilder(
             ICacheManager cacheManager,
-            IUserModelBuilder userBuilder,
             ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _userBuilder = userBuilder;
             _cacheManager = cacheManager;
         }
 
-        public Task<List<ChatroomReadDto>> BuildAllAsync(Guid userId)
+        public async Task<ChatroomPageModel> BuildChatroomPageModelAsync(Guid userId)
         {
-            return _cacheManager.GetOrSetAsync(CacheKeyCollection.Memberships(userId), async () =>
+            return await _cacheManager.GetOrSetAsync(CacheKeyCollection.Chatrooms(userId), async () =>
             {
                 var chatrooms = await _dbContext.Memberships
                     .Where(x => x.UserId == userId)
                     .Where(x => x.Status == MembershipStatusType.Active)
-                    .Include(x => x.Chatroom).Select(x => x.Chatroom).ToListAsync();
+                        .Include(x => x.Chatroom)
+                        .ThenInclude(x => x.Memberships)
+                        .ThenInclude(x => x.User)
+                        .Select(x => x.Chatroom)
+                        .ToListAsync();
 
-                var chatroomReadDtos = new List<ChatroomReadDto>();
-                foreach (var chatroom in chatrooms)
+                return new ChatroomPageModel
                 {
-                    chatroomReadDtos.Add(await _cacheManager.GetOrSetAsync(
-                        CacheKeyCollection.Membership(userId, chatroom.Id), () =>
+                    Chatrooms = chatrooms.Select(chatroom =>
                     {
-                        return CreateAsync(userId, chatroom);
-                    }));
-                }
+                        return _cacheManager.GetOrSet(CacheKeyCollection.Chatroom(userId, chatroom.Id), () =>
+                        {
+                            var members = GetMembers(chatroom);
+                            var membersWithoutSelf = members
+                                .Where(x => x.Id != userId)
+                                .ToList();
 
-                return chatroomReadDtos;
+                            return new ChatroomPageModel.ChatroomModel
+                            {
+                                Id = chatroom.Id,
+                                Members = members,
+                                Name = chatroom.Name ?? GetName(membersWithoutSelf),
+                                NameCaption = chatroom.NameCaption ?? GetNameCaption(membersWithoutSelf)
+                            };
+                        });
+                    }).ToList()
+                };
             });
         }
 
-        public Task<ChatroomReadDto> BuildAsync(Guid userId, Guid chatroomId)
+        public async Task<ChatroomPageModel.ChatroomModel> BuildChatroomModelAsync(Guid userId, Guid chatroomId)
         {
-            return _cacheManager.GetOrSetAsync(CacheKeyCollection.Membership(userId, chatroomId), async () =>
+            return await _cacheManager.GetOrSetAsync(CacheKeyCollection.Chatroom(userId, chatroomId), async () =>
             {
                 var chatroom = await _dbContext.Memberships
                     .Where(x => x.UserId == userId)
                     .Where(x => x.ChatroomId == chatroomId)
                     .Where(x => x.Status == MembershipStatusType.Active)
-                    .Include(x => x.Chatroom).Select(x => x.Chatroom).FirstOrDefaultAsync();
+                        .Include(x => x.Chatroom)
+                        .ThenInclude(x => x.Memberships)
+                        .ThenInclude(x => x.User)
+                        .Select(x => x.Chatroom)
+                        .FirstOrDefaultAsync();
 
-                return await CreateAsync(userId, chatroom);
+                var members = GetMembers(chatroom);
+                var membersWithoutSelf = members
+                    .Where(x => x.Id != userId)
+                    .ToList();
+
+                return new ChatroomPageModel.ChatroomModel
+                {
+                    Id = chatroom.Id,
+                    Members = members,
+                    Name = chatroom.Name ?? GetName(membersWithoutSelf),
+                    NameCaption = chatroom.NameCaption ?? GetNameCaption(membersWithoutSelf)
+                };
             });
         }
 
-        private async Task<ChatroomReadDto> CreateAsync(Guid userId, Chatroom chatroom)
+        private static List<ChatroomPageModel.UserModel> GetMembers(Chatroom chatroom)
         {
-            var chatroomReadDto = new ChatroomReadDto
-            {
-                Id = chatroom.Id,
-                Name = chatroom.Name,
-                NameCaption = chatroom.NameCaption
-            };
-
-            var members = await GetMembersAsync(chatroom.Id);
-            var membersWithoutSelf = members.Where(x => x.Id != userId).ToList();
-
-            if (chatroomReadDto.Name == null ||
-                chatroomReadDto.NameCaption == null )
-            {
-                chatroomReadDto.Name ??= GenerateName(membersWithoutSelf);
-                chatroomReadDto.NameCaption ??= GenerateNameCaption(membersWithoutSelf);
-            }
-
-            foreach (var member in members)
-            {
-                chatroomReadDto.Members.Add(_cacheManager.GetOrSet(
-                    CacheKeyCollection.User(member.Id), () => new UserReadDto
-                {
-                    Id = member.Id,
-                    Name = member.DisplayName,
-                    NameCaption = member.DisplayNameUid,
-                }));
-            }
-
-            return chatroomReadDto;
-        }
-
-        private Task<List<User>> GetMembersAsync(Guid chatroomId)
-        {
-            return _dbContext.Memberships
-                .Where(x => x.ChatroomId == chatroomId)
+            return chatroom.Memberships
                 .Where(x => x.Status == MembershipStatusType.Active)
-                .Include(x => x.User).Select(x => x.User).ToListAsync();
+                .Select(x =>
+                {
+                    return new ChatroomPageModel.UserModel
+                    {
+                        Id = x.UserId,
+                        Name = x.User.DisplayName,
+                        NameUid = x.User.DisplayNameUid,
+                        NameCaption = x.User.DisplayNameUid
+                    };
+                }).ToList();
         }
 
-        private static string GenerateName(IList<User> membersWithoutSelf)
+        private static string GetName(List<ChatroomPageModel.UserModel> membersWithoutSelf)
         {
             return membersWithoutSelf.Count != 1
-                ? string.Join(", ", membersWithoutSelf.Select(x => x.DisplayName).Append("You"))
-                : string.Join(", ", membersWithoutSelf.Select(x => x.DisplayName));
+                ? string.Join(", ", membersWithoutSelf.Select(x => x.Name).Append("You"))
+                : string.Join(", ", membersWithoutSelf.Select(x => x.Name));
         }
 
-        private static string GenerateNameCaption(IList<User> membersWithoutSelf)
+        private static string GetNameCaption(List<ChatroomPageModel.UserModel> membersWithoutSelf)
         {
             return membersWithoutSelf.Count == 1
-                ? $"{membersWithoutSelf.First().DisplayNameUid}"
+                ? $"{membersWithoutSelf.First().NameUid}"
                 : $"{membersWithoutSelf.Count + 1} Members";
         }
     }

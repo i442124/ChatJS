@@ -20,7 +20,6 @@ using ChatJS.Domain.Users.Validators;
 
 using ChatJS.Models.Chatlogs;
 using ChatJS.Models.Chatrooms;
-using ChatJS.Models.Deliveries;
 using ChatJS.Models.Messages;
 using ChatJS.Models.Users;
 
@@ -98,7 +97,6 @@ namespace ChatJS.WebServer
         {
             services.AddScoped<IChatlogModelBuilder, ChatlogModelBuilder>();
             services.AddScoped<IChatroomModelBuilder, ChatroomModelBuilder>();
-            services.AddScoped<IDeliveryModelBuilder, DeliveryModelBuilder>();
             services.AddScoped<IMessageModelBuilder, MessageModelBuilder>();
             services.AddScoped<IUserModelBuilder, UserModelBuilder>();
         }

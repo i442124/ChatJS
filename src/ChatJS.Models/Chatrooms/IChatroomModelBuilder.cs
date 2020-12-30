@@ -8,8 +8,8 @@ namespace ChatJS.Models.Chatrooms
 {
     public interface IChatroomModelBuilder
     {
-        Task<List<ChatroomReadDto>> BuildAllAsync(Guid userId);
+        Task<ChatroomPageModel> BuildChatroomPageModelAsync(Guid userId);
 
-        Task<ChatroomReadDto> BuildAsync(Guid userId, Guid chatroomId);
+        Task<ChatroomPageModel.ChatroomModel> BuildChatroomModelAsync(Guid userId, Guid chatroomId);
     }
 }

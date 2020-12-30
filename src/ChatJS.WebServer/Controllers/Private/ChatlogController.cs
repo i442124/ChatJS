@@ -21,17 +21,38 @@ namespace ChatJS.WebServer.Controllers.Private
 
         public ChatlogController(
             IContextService contextService,
-            IChatlogModelBuilder chatroomBuilder)
+            IChatlogModelBuilder chatlogModelBuilder)
         {
             _contextService = contextService;
-            _chatlogModelBuilder = chatroomBuilder;
+            _chatlogModelBuilder = chatlogModelBuilder;
         }
 
         [HttpGet("{chatroomId}")]
         public async Task<IActionResult> OnGetAsync(Guid chatroomId)
         {
             var user = await _contextService.CurrentUserAsync();
-            return Json(await _chatlogModelBuilder.BuildAsync(user.Id, chatroomId));
+            return Json(await _chatlogModelBuilder.BuildChatlogPageModelAsync(user.Id, chatroomId));
+        }
+
+        [HttpGet("anonymous/{chatroomId}")]
+        public async Task<IActionResult> OnGetAnonymousAsync(Guid chatroomId)
+        {
+            var user = await _contextService.CurrentUserAsync();
+            return Json(await _chatlogModelBuilder.BuildChatlogPageModelAnonymousAsync(user.Id, chatroomId));
+        }
+
+        [HttpGet("{chatroomId}/{messageId}")]
+        public async Task<IActionResult> OnGetAsync(Guid chatroomId, Guid messageId)
+        {
+            var user = await _contextService.CurrentUserAsync();
+            return Json(await _chatlogModelBuilder.BuildMessageModelAsync(user.Id, chatroomId, messageId));
+        }
+
+        [HttpGet("anonymous/{chatroomId}/{messageId}")]
+        public async Task<IActionResult> OnGetAnonymousAsync(Guid chatroomId, Guid messageId)
+        {
+            var user = await _contextService.CurrentUserAsync();
+            return Json(await _chatlogModelBuilder.BuildMessageModelAnonymousAsync(user.Id, chatroomId, messageId));
         }
     }
 }
