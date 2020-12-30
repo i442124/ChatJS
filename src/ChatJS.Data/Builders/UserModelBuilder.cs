@@ -37,6 +37,7 @@ namespace ChatJS.Data.Builders
 
                 return new UserPageModel
                 {
+                    Id = user.Id,
                     Name = user.DisplayName,
                     NameUid = user.DisplayNameUid,
                     NameCaption = user.DisplayNameUid,
@@ -63,6 +64,7 @@ namespace ChatJS.Data.Builders
 
             return new UserPageModel.UserModel
             {
+                Id = user.Id,
                 Name = user.DisplayName,
                 NameUid = user.DisplayNameUid,
                 NameCaption = user.DisplayNameUid

@@ -10,8 +10,8 @@ class MessageEntry extends Component {
     const { creator, content, timeStamp, origin } = this.props;
     const messageAttribute = this.getMessageAttribute(origin);
 
-    const shouldRenderName = !!creator;
-    const shouldRenderTime = !!timeStamp;
+    const shouldRenderName = !!creator && this.props.shouldRenderName;
+    const shouldRenderTime = !!timeStamp && this.props.shouldRenderTime;
 
     return (
       <div className={`message-item ${messageAttribute}`}>
@@ -47,6 +47,11 @@ class MessageEntry extends Component {
       navigator.language, { day: 'numeric', month: 'numeric', year: 'numeric' });
   }
 
+}
+
+MessageEntry.defaultProps = {
+  shouldRenderName: true,
+  shouldRenderTime: true
 }
 
 export default MessageEntry;

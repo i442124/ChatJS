@@ -3,6 +3,10 @@ import { ApplicationPaths, ApplicationName } from './ApiAuthorizationConstants';
 
 class AuthorizeService {
 
+  setUserState(user) {
+    this.user = user;
+  }
+
   async getUser() {
     await this.ensureUserManagerInitialized();
     return await this._userManager.getUser();

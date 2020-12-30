@@ -5,6 +5,8 @@ namespace ChatJS.Models.Users
 {
     public class UserPageModel
     {
+        public Guid Id { get; set; }
+
         public string Name { get; set; }
 
         public string NameUid { get; set; }

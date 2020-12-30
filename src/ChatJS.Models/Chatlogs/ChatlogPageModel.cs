@@ -22,12 +22,12 @@ namespace ChatJS.Models.Chatlogs
             public DateTime TimeStamp { get; set; }
 
             public DeliveryModel Delivery { get; set; }
-
-            public MessageOriginType Origin { get; set; }
         }
 
         public class UserModel
         {
+            public Guid Id { get; set; }
+
             public string Name { get; set; }
 
             public string NameUid { get; set; }
@@ -35,9 +35,9 @@ namespace ChatJS.Models.Chatlogs
 
         public class DeliveryModel
         {
-            public bool HasReadByEveryone { get; set; }
+            public bool WasReadByEveryone { get; set; }
 
-            public bool HasReceivedByEveryone { get; set; }
+            public bool WasReceivedByEveryone { get; set; }
         }
     }
 }

@@ -14,19 +14,21 @@ class MessageArea extends Component {
   componentDidMount() {
   }
 
-  componentDidUpdate(props) {
+  shouldComponentUpdate(props) {
     const { chatroom } = this.props;
-    if (!props.chatroom || chatroom.id !== props.chatroom.id) {
-      this.fetchComponentData(chatroom);
+
+    if (!!props.chatroom && (!chatroom || 
+      props.chatroom.id !== chatroom.id)) {
+      this.fetchComponentData(props.chatroom);
+      return false;
     }
+
+    return true;
   }
 
   async fetchComponentData(chatroom) {
 
-    const request = chatroom.members.length === 2 
-      ? `api/private/chatlogs/anonymous/${chatroom.id}`
-      : `api/private/chatlogs/${chatroom.id}`
-
+    const request = `api/private/chatlogs/${chatroom.id}`
     console.log('MessageArea', { request });
 
     const response = await AuthService.fetch(request);
@@ -47,6 +49,12 @@ class MessageArea extends Component {
     if (!!globalMessages) {
       globalMessages.forEach(message => {
 
+        if (message.creator.id === AuthService.user.id) {
+          message.origin = 'send';
+        } else {
+          message.origin = 'received';
+        }
+
         currentDay = new Date(message.timeStamp).getDay();
         if (previousDay === undefined || previousDay !== currentDay) {
           localMessages.push({ content: this.getLocaleDateString(message.timeStamp)});
@@ -66,8 +74,14 @@ class MessageArea extends Component {
   }
 
   render() {
+
     const { ready, messages } = this.state;
-    const { chatroom, component: ComponentBody, componentHeader: ComponentHeader, componentFooter: ComponentFooter } = this.props;
+    const { chatroom,
+      component: ComponentBody, 
+      componentHeader: ComponentHeader, 
+      componentFooter: ComponentFooter } = this.props;
+
+    const localMessages = this.getLocalMessages(messages);
 
     return(
       <div aria-label="message-area">
@@ -80,8 +94,9 @@ class MessageArea extends Component {
           <div className="row no-gutters flex-grow-1">
             <div className="col p-2" aria-label="message-area-body">
               <div className="d-flex flex-column">
-                {ready && this.getLocalMessages(messages).map((message, idx) =>
-                  <ComponentBody key={`message-${idx}`} {...message} />
+                {ready && localMessages.map((message, idx) =>
+                  <ComponentBody key={`message-${idx}`} {...message}
+                    shouldRenderName={chatroom.members.length !== 2} />
                 )}
               </div>
             </div>

@@ -25,6 +25,7 @@ class UserArea extends Component {
     const data = await response.json();
     console.log('UserArea', { data });
 
+    AuthService.setUserState(data);
     this.setState({ user: data, ready: true});
   }
 
