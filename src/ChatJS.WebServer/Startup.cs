@@ -25,12 +25,14 @@ using ChatJS.Models.Messages;
 using ChatJS.Models.Users;
 
 using ChatJS.WebServer;
+using ChatJS.WebServer.Configurations;
 using ChatJS.WebServer.Hubs;
 using ChatJS.WebServer.Services;
 
 using FluentValidation;
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -38,7 +40,9 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace ChatJS.WebServer
 {
@@ -54,6 +58,9 @@ namespace ChatJS.WebServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSignalR();
+            services.AddSingleton(typeof(IHubConnectionMapper<>), typeof(HubConnectionMapper<>));
+            services.AddSingleton(typeof(IHubSubscriptionMapper<>), typeof(HubSubscriptionMapper<>));
+
             services.AddRazorPages();
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -109,6 +116,7 @@ namespace ChatJS.WebServer
         {
             services.AddScoped<IContextService, ContextService>();
             services.AddScoped<IIntegrityService, IntegrityService>();
+            services.AddScoped<INotificationService, NotificationService>();
         }
 
         public void ConfigureDatabaseServices(IServiceCollection services)
@@ -134,6 +142,10 @@ namespace ChatJS.WebServer
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPostConfigureOptions<JwtBearerOptions>,
+                ConfigureJwtBearerOptions>());
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AuthorizationDbContext authContext, ApplicationDbContext appContext)

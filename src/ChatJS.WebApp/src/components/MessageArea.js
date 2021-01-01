@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { AuthService } from "./api-authorization/AuthorizeService";
+import { NotifyService } from "./websockets/NotificationService"
 
 import './MessageArea.css';
 import './MessageEntry.css';
@@ -11,15 +12,24 @@ class MessageArea extends Component {
     messages: undefined,
   }
 
-  componentDidMount() {
+  constructor() {
+    super();
+    this.getNewMessage = this.getNewMessage.bind(this);
   }
 
   shouldComponentUpdate(props) {
     const { chatroom } = this.props;
 
-    if (!!props.chatroom && (!chatroom || 
+    if (!!props.chatroom && (!chatroom ||
       props.chatroom.id !== chatroom.id)) {
+      console.log('Switch');
       this.fetchComponentData(props.chatroom);
+
+      if (!!chatroom) {
+        NotifyService.off("GetNewPost", chatroom.id);
+      }
+
+      NotifyService.on("GetNewPost", props.chatroom.id, this.getNewMessage);
       return false;
     }
 
@@ -37,7 +47,19 @@ class MessageArea extends Component {
     const data = await response.json();
     console.log('MessageArea', { data });
 
-    this.setState({ ...data, ready: true});
+    this.setState({ ...data, ready: true });
+  }
+
+  getNewMessage(message) {
+    console.log("New message...");
+    console.log(message);
+
+    this.setState(prevState => ({
+      messages: [...prevState.messages, message]
+    }));
+
+    console.log("Success...");
+    console.log(this.state.messages);
   }
 
   getLocalMessages(globalMessages) {
@@ -57,7 +79,7 @@ class MessageArea extends Component {
 
         currentDay = new Date(message.timeStamp).getDay();
         if (previousDay === undefined || previousDay !== currentDay) {
-          localMessages.push({ content: this.getLocaleDateString(message.timeStamp)});
+          localMessages.push({ content: this.getLocaleDateString(message.timeStamp) });
           previousDay = currentDay;
         }
 
@@ -77,13 +99,13 @@ class MessageArea extends Component {
 
     const { ready, messages } = this.state;
     const { chatroom,
-      component: ComponentBody, 
-      componentHeader: ComponentHeader, 
+      component: ComponentBody,
+      componentHeader: ComponentHeader,
       componentFooter: ComponentFooter } = this.props;
 
     const localMessages = this.getLocalMessages(messages);
 
-    return(
+    return (
       <div aria-label="message-area">
         <div className="d-flex flex-column h-100">
           <div className="row no-gutters flex-grow-0">
@@ -96,7 +118,8 @@ class MessageArea extends Component {
               <div className="d-flex flex-column">
                 {ready && localMessages.map((message, idx) =>
                   <ComponentBody key={`message-${idx}`} {...message}
-                    shouldRenderName={chatroom.members.length !== 2} />
+                    shouldRenderName={chatroom.members.length !== 2 && 
+                      !!message.creator && message.creator.id !== AuthService.user.id} />
                 )}
               </div>
             </div>

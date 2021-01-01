@@ -44,13 +44,11 @@ class ChatListArea extends Component {
       <div aria-label='chat-list-area'>
         <ul className="list-group"> {
           chatrooms.map((chatroom, idx) =>
-            <div key={`list-item-${idx}`} 
-              aria-label='chat-list-item'>
-              <li className="list-group-item list-group-item-action p-2"
-                onClick={() => componentSelected && componentSelected({...chatroom})}>
+           <li key={`list-group-item-${idx}`}
+              className="list-group-item list-group-item-action p-2"
+              onClick={() => componentSelected && componentSelected({...chatroom})}>
                 <Component {...chatroom} />
-              </li>
-            </div> 
+            </li>
         )}
         </ul>
       </div>

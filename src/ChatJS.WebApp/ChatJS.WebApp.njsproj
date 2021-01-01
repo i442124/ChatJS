@@ -97,6 +97,7 @@
     <Content Include="src\components\UserArea.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\components\websockets\NotificationService.js" />
     <Content Include="src\index.css" />
     <Content Include="src\index.js" />
     <Content Include="src\pages\HomePage.css" />
@@ -113,6 +114,7 @@
     <Folder Include="src\components\api-authorization\" />
     <Folder Include="src\components\api-authorization\actions\" />
     <Folder Include="src\assets\" />
+    <Folder Include="src\components\websockets\" />
     <Folder Include="src\pages\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />

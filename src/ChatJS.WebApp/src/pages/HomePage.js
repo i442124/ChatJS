@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NotifyService } from '../components/websockets/NotificationService';
 
 import Banner from '../components/Banner';
 import UserArea from '../components/UserArea';
@@ -6,15 +7,27 @@ import MessageArea from '../components/MessageArea';
 import MessageEntry from '../components/MessageEntry';
 import ChatListArea from '../components/ChatListArea';
 import ChatListEntry from '../components/ChatListEntry';
+import InputArea from '../components/InputArea';
 
 import './HomePage.css';
-import InputArea from '../components/InputArea';
 
 class HomePage extends Component {
 
   state = {
     chatroom: undefined,
     message: undefined,
+  }
+
+  componentDidMount() { 
+    this.onSignalRConnection();
+  }
+
+  async onSignalRConnection() {
+    NotifyService
+      .start()
+      .then((result) => {
+
+      });
   }
 
   render() {

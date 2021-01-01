@@ -4,9 +4,16 @@ import { AuthService } from "./api-authorization/AuthorizeService";
 import './InputArea.css';
 
 class InputArea extends Component {
-  
+
   state = {
-    content: '' 
+    content: '',
+    attachment: null
+  }
+
+  componentDidMount() {
+  }
+
+  componentDidUpdate() {
   }
 
   async fetchComponentData() {
@@ -30,30 +37,52 @@ class InputArea extends Component {
       });
     }
 
+    this.setState({ content: '' });
+  }
+
+  async submitComponentData(event) {
+    event.preventDefault();
+    await this.fetchComponentData();
   }
 
   render() {
+
+    const { content } = this.state;
+    const { placeholder } = this.props;
+
     return (
-      <form className="d-flex flex-column">
+      <form
+        className="d-flex flex-column"
+        onSubmit={e => this.submitComponentData(e)}>
+
         <div className="d-flex align-items-center">
           <div className="d-flex flex-grow-1 mx-2">
-            <input 
-              value={this.state.content} 
-              style={{ borderRadius: "1rem"}}
-              className="form-control shadow-sm border-0"
-              onChange={e => this.setState({ content: e.target.value})}>
+            <input
+              value={content}
+              placeholder={placeholder}
+              className="form-control shadow-sm"
+              style={{ border: 'none', borderRadius: '1rem' }}
+              onChange={e => this.setState({ content: e.target.value })}>
             </input>
           </div>
-          <div 
-            style={{ height: 48, width: 48 }}
-            onClick={e => this.fetchComponentData()}
-            className="d-flex justify-content-center align-items-center">
-            <i className="text-muted btn fas fa-lg fa-paper-plane" />
+
+          <div
+            style={{ width: 48, height: 48 }}
+            className="d-flex align-items-center">
+            <button className="btn border-0 text-muted">
+              <i className="fas fa-lg fa-paper-plane" />
+            </button>
           </div>
+
         </div>
       </form>
-    );
+    )
   }
+}
+
+InputArea.defaultProps = {
+  chatroom: { id: undefined },
+  placeholder: "Type a message...",
 }
 
 export default InputArea;

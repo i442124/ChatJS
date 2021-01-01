@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
+using ChatJS.Data;
+using ChatJS.Data.Caching;
 
 using ChatJS.Domain;
 using ChatJS.Domain.Posts;
@@ -15,11 +17,15 @@ namespace ChatJS.Data.Services
 {
     public class PostService : IPostService
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ApplicationDbContext _dbContext;
 
-        public PostService(ApplicationDbContext dbContext)
+        public PostService(
+            ICacheManager cacheManager,
+            ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
+            _cacheManager = cacheManager;
         }
 
         public async Task CreateAsync(CreatePost command)
@@ -34,6 +40,9 @@ namespace ChatJS.Data.Services
 
             await _dbContext.AddAsync(post);
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Chatlog(command.ChatroomId));
+            _cacheManager.Remove(CacheKeyCollection.ChatlogEntry(command.ChatroomId, command.MessageId));
         }
 
         public async Task DeleteAsync(DeletePost command)

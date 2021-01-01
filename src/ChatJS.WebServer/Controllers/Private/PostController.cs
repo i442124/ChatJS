@@ -5,11 +5,15 @@ using System.Threading.Tasks;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Posts;
 using ChatJS.Domain.Posts.Commands;
+using ChatJS.Models.Chatlogs;
+using ChatJS.Models.Messages;
 using ChatJS.Models.Posts;
+using ChatJS.WebServer.Hubs;
 using ChatJS.WebServer.Services;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ChatJS.WebServer.Controllers.Private
 {
@@ -20,14 +24,19 @@ namespace ChatJS.WebServer.Controllers.Private
     {
         private readonly IPostService _postService;
         private readonly IContextService _contextService;
-        private readonly IPostModelBuilder _postModelBuilder;
+        private readonly INotificationService _notificationService;
+        private readonly IChatlogModelBuilder _chatlogModelBuilder;
 
         public PostController(
             IPostService postService,
-            IContextService contextService)
+            IContextService contextService,
+            INotificationService notificationService,
+            IChatlogModelBuilder chatlogModelBuilder)
         {
             _postService = postService;
             _contextService = contextService;
+            _notificationService = notificationService;
+            _chatlogModelBuilder = chatlogModelBuilder;
         }
 
         [HttpPost("create")]
@@ -40,6 +49,8 @@ namespace ChatJS.WebServer.Controllers.Private
             };
 
             await _postService.CreateAsync(command);
+            await _notificationService.PublishAsync("GetNewPost", command.ChatroomId, await _chatlogModelBuilder.BuildMessageModelAsync(command.ChatroomId, command.MessageId));
+
             return Ok();
         }
 
