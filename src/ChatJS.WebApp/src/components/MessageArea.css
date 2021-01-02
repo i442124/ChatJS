@@ -13,3 +13,8 @@
 [aria-label="message-area-footer"] {
     background: #efefef;
 }
+
+.scrollable {
+    min-height: 0;
+    overflow-y: auto;
+}

@@ -49,7 +49,7 @@ namespace ChatJS.WebServer.Controllers.Private
             };
 
             await _postService.CreateAsync(command);
-            await _notificationService.PublishAsync("GetNewPost", command.ChatroomId, await _chatlogModelBuilder.BuildMessageModelAsync(command.ChatroomId, command.MessageId));
+            await _notificationService.PublishAsync("CreatePost", command.ChatroomId, await _chatlogModelBuilder.BuildMessageModelAsync(command.ChatroomId, command.MessageId));
 
             return Ok();
         }

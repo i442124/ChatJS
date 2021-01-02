@@ -9,28 +9,44 @@ class MessageArea extends Component {
 
   state = {
     ready: false,
-    messages: undefined,
+    message: undefined
   }
 
-  constructor() {
-    super();
-    this.getNewMessage = this.getNewMessage.bind(this);
+  componentSourceAdded = (chatroom) => {
+    NotifyService.on("CreatePost", chatroom.id, 
+      message => this.createComponentData(message));
+    NotifyService.on("UpdatePost", chatroom.id, 
+      message => this.updateComponentData(message));
+    NotifyService.on("DeletePost", chatroom.id, 
+      message => this.deleteComponentData(message));
   }
 
-  shouldComponentUpdate(props) {
+  componentSourceDisposed = (chatroom) => {
+    NotifyService.off("CreatePost", chatroom.id,
+      message => this.createComponentData(message));
+    NotifyService.off("UpdatePost", chatroom.id,
+      message => this.updateComponentData(message));
+    NotifyService.off("DeletePost", chatroom.id,
+      message => this.deleteComponentData(message));
+  }
+
+  shouldComponentUpdate(nextProps) {
+
     const { chatroom } = this.props;
-
-    if (!!props.chatroom && (!chatroom ||
-      props.chatroom.id !== chatroom.id)) {
-      console.log('Switch');
-      this.fetchComponentData(props.chatroom);
+    if (!!nextProps.chatroom && (!chatroom ||
+      nextProps.chatroom.id !== chatroom.id)) {
 
       if (!!chatroom) {
-        NotifyService.off("GetNewPost", chatroom.id);
+        this.componentSourceDisposed(chatroom);
       }
 
-      NotifyService.on("GetNewPost", props.chatroom.id, this.getNewMessage);
+      this.componentSourceAdded(nextProps.chatroom);
+      this.fetchComponentData(nextProps.chatroom);
       return false;
+
+    } else if (!!chatroom && !nextProps.chatroom) {
+      this.componentSourceDisposed(chatroom);
+      return true;
     }
 
     return true;
@@ -50,44 +66,55 @@ class MessageArea extends Component {
     this.setState({ ...data, ready: true });
   }
 
-  getNewMessage(message) {
-    console.log("New message...");
-    console.log(message);
-
+  createComponentData(message) {
     this.setState(prevState => ({
       messages: [...prevState.messages, message]
     }));
-
-    console.log("Success...");
-    console.log(this.state.messages);
   }
 
-  getLocalMessages(globalMessages) {
-    var currentDay = undefined;
-    var previousDay = undefined;
+  updateComponentData(message) {
+    this.setState(prevState => ({
+      messages: prevState.messages.map(prevMessage => {
+        return message.id !== prevMessage.id ? prevMessage : message;
+      })
+    }));
+  }
 
-    var localMessages = [];
+  deleteComponentData(message) {
+    this.setState(prevState => ({
+      messages: prevState.messages.filter(prevMessage => {
+        return message.id !== prevMessage.id;
+      })
+    }))
+  }
+
+  getLocaleMessages(globalMessages) {
+
+    let currentDay = undefined;
+    let previousDay = undefined;
+    const localMessages = new Array();
 
     if (!!globalMessages) {
       globalMessages.forEach(message => {
+        const { creator, timeStamp } = message;
 
-        if (message.creator.id === AuthService.user.id) {
+        if (creator.id === AuthService.user.id) {
           message.origin = 'send';
         } else {
           message.origin = 'received';
         }
 
-        currentDay = new Date(message.timeStamp).getDay();
+        currentDay = new Date(timeStamp).getDay();
         if (previousDay === undefined || previousDay !== currentDay) {
-          localMessages.push({ content: this.getLocaleDateString(message.timeStamp) });
+          localMessages.push({ content: this.getLocaleDateString(timeStamp) });
           previousDay = currentDay;
         }
 
         localMessages.push(message);
       });
-
-      return localMessages;
     }
+
+    return localMessages;
   }
 
   getLocaleDateString(timeStamp) {
@@ -103,7 +130,7 @@ class MessageArea extends Component {
       componentHeader: ComponentHeader,
       componentFooter: ComponentFooter } = this.props;
 
-    const localMessages = this.getLocalMessages(messages);
+    const localMessages = this.getLocaleMessages(messages);
 
     return (
       <div aria-label="message-area">
@@ -113,12 +140,12 @@ class MessageArea extends Component {
               <ComponentHeader {...chatroom} />
             </div>
           </div>
-          <div className="row no-gutters flex-grow-1">
+          <div className="row no-gutters scrollable flex-grow-1">
             <div className="col p-2" aria-label="message-area-body">
               <div className="d-flex flex-column">
                 {ready && localMessages.map((message, idx) =>
                   <ComponentBody key={`message-${idx}`} {...message}
-                    shouldRenderName={chatroom.members.length !== 2 && 
+                    shouldRenderName={chatroom.members.length !== 2 &&
                       !!message.creator && message.creator.id !== AuthService.user.id} />
                 )}
               </div>
