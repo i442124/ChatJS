@@ -41,8 +41,8 @@ namespace ChatJS.Data.Services
             await _dbContext.AddAsync(post);
             await _dbContext.SaveChangesAsync();
 
-            _cacheManager.Remove(CacheKeyCollection.Chatlog(command.ChatroomId));
-            _cacheManager.Remove(CacheKeyCollection.ChatlogEntry(command.ChatroomId, command.MessageId));
+            _cacheManager.Remove(CacheKeyCollection.Post(post.Id));
+            _cacheManager.Remove(CacheKeyCollection.Posts(post.ChatroomId));
         }
 
         public async Task DeleteAsync(DeletePost command)
@@ -52,6 +52,9 @@ namespace ChatJS.Data.Services
 
             post.Status = PostStatusType.Deleted;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Posts(post.Id));
+            _cacheManager.Remove(CacheKeyCollection.Post(post.ChatroomId));
         }
 
         public async Task<Post> GetByIdAsync(GetPostById command)

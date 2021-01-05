@@ -1,6 +1,6 @@
 ﻿namespace ChatJS.Models.Chatrooms
 {
-    public enum ChatroomStatus
+    public enum ChatroomModelStatus
     {
         Unknown,
 

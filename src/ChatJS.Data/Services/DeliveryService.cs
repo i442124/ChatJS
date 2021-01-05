@@ -3,7 +3,7 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ChatJS.Domain;
+using ChatJS.Data.Caching;
 using ChatJS.Domain.Deliveries;
 using ChatJS.Domain.Deliveries.Commands;
 
@@ -13,11 +13,15 @@ namespace ChatJS.Data.Services
 {
     public class DeliveryService : IDeliveryService
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ApplicationDbContext _dbContext;
 
-        public DeliveryService(ApplicationDbContext dbContext)
+        public DeliveryService(
+            ICacheManager cacheManager,
+            ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
+            _cacheManager = cacheManager;
         }
 
         public async Task CreateAsync(CreateDelivery command)
@@ -32,6 +36,8 @@ namespace ChatJS.Data.Services
 
             await _dbContext.AddAsync(delivery);
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Message(delivery.MessageId));
         }
 
         public async Task<Delivery> GetByIdAsync(GetDeliveryById command)
@@ -77,6 +83,8 @@ namespace ChatJS.Data.Services
             delivery.Status = DeliveryStatusType.Read;
 
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Message(delivery.MessageId));
         }
 
         public async Task MarkAsReceivedAsync(MarkDeliveryAsReceived command)
@@ -93,6 +101,8 @@ namespace ChatJS.Data.Services
             delivery.Status = DeliveryStatusType.Received;
 
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Message(delivery.MessageId));
         }
     }
 }

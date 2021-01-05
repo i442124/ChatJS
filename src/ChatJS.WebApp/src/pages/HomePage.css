@@ -1,5 +1,30 @@
 .row-nowrap {
-    display:flex;
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
 }
+
+.col-head {
+    color: white;
+    background: #ffb978;
+}
+
+[aria-label="chat-room-creator"] {
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+}
+
+    [aria-label="chat-room-creator"] > input[type="checkbox"] ~ * {
+        right: 100%;
+        position: relative;
+        pointer-events: auto;
+        transition: right 300ms;
+        transition-timing-function: cubic-bezier(1,0,0,1);
+    }
+
+    [aria-label="chat-room-creator"] > input[type="checkbox"]:checked ~ * {
+        right: 0%;
+        transition: right 300ms;
+        transition-timing-function: cubic-bezier(0,0.85,0,1);
+    }

@@ -6,6 +6,8 @@ namespace ChatJS.Domain.Chatrooms
 {
     public interface IChatroomRules
     {
-        Task<bool> IsValidAsync(Guid id);
+        Task<bool> IsValidAsync(Guid chatroomId);
+
+        Task<bool> IsAuthorizedAsync(Guid userId, Guid chatroomId);
     }
 }

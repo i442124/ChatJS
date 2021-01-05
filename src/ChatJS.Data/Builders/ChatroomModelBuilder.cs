@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
+using ChatJS.Data;
 using ChatJS.Data.Caching;
 using ChatJS.Domain.Chatrooms;
-using ChatJS.Domain.Memberships;
-using ChatJS.Domain.Users;
 using ChatJS.Models.Chatrooms;
 
 using Microsoft.EntityFrameworkCore;
@@ -26,100 +25,55 @@ namespace ChatJS.Data.Builders
             _cacheManager = cacheManager;
         }
 
-        public async Task<ChatroomPageModel> BuildChatroomPageModelAsync(Guid userId)
+        public Task<ChatroomPageModel> BuildChatroomPageModelAsync(Guid chatroomId)
         {
-            return await _cacheManager.GetOrSetAsync(CacheKeyCollection.Chatrooms(userId), async () =>
+            return _cacheManager.GetOrSetAsync(CacheKeyCollection.Chatroom(chatroomId), async () =>
             {
-                var chatrooms = await _dbContext.Memberships
-                    .Where(x => x.UserId == userId)
-                    .Where(x => x.Status == MembershipStatusType.Active)
-                        .Include(x => x.Chatroom)
-                        .ThenInclude(x => x.Memberships)
-                        .ThenInclude(x => x.User)
-                        .Select(x => x.Chatroom)
-                        .ToListAsync();
+                var chatroom = await _dbContext.Chatrooms
+                   .Where(x => x.Id == chatroomId)
+                   .Where(x => x.Status == ChatroomStatusType.Active)
+                   .Include(x => x.Memberships)
+                   .ThenInclude(x => x.User)
+                   .FirstOrDefaultAsync();
 
                 return new ChatroomPageModel
                 {
-                    Chatrooms = chatrooms.Select(chatroom =>
+                    Chatroom = new ChatroomPageModel.ChatroomModel
                     {
-                        return _cacheManager.GetOrSet(CacheKeyCollection.Chatroom(userId, chatroom.Id), () =>
-                        {
-                            var members = GetMembers(chatroom);
-                            var membersWithoutSelf = members
-                                .Where(x => x.Id != userId)
-                                .ToList();
+                        Id = chatroom.Id,
+                        Name = chatroom.Name,
+                        NameCaption = chatroom.NameCaption,
+                    },
 
-                            return new ChatroomPageModel.ChatroomModel
-                            {
-                                Id = chatroom.Id,
-                                Members = members,
-                                Name = chatroom.Name ?? GetName(membersWithoutSelf),
-                                NameCaption = chatroom.NameCaption ?? GetNameCaption(membersWithoutSelf)
-                            };
-                        });
-                    }).ToList()
+                    Members = chatroom.Memberships
+                        .Select(x => x.User)
+                        .Select(x => new ChatroomPageModel.UserModel
+                        {
+                            Id = x.Id,
+                            Name = x.DisplayName,
+                            NameUid = x.DisplayNameUid,
+                            NameCaption = x.DisplayNameUid
+                        }).ToList()
                 };
             });
         }
 
-        public async Task<ChatroomPageModel.ChatroomModel> BuildChatroomModelAsync(Guid userId, Guid chatroomId)
+        public Task<ChatroomPageModel.ChatroomModel> BuildChatroomModelAsync(Guid chatroomId)
         {
-            return await _cacheManager.GetOrSetAsync(CacheKeyCollection.Chatroom(userId, chatroomId), async () =>
+            return _cacheManager.GetOrSetAsync(CacheKeyCollection.Chatroom(chatroomId), async () =>
             {
-                var chatroom = await _dbContext.Memberships
-                    .Where(x => x.UserId == userId)
-                    .Where(x => x.ChatroomId == chatroomId)
-                    .Where(x => x.Status == MembershipStatusType.Active)
-                        .Include(x => x.Chatroom)
-                        .ThenInclude(x => x.Memberships)
-                        .ThenInclude(x => x.User)
-                        .Select(x => x.Chatroom)
-                        .FirstOrDefaultAsync();
-
-                var members = GetMembers(chatroom);
-                var membersWithoutSelf = members
-                    .Where(x => x.Id != userId)
-                    .ToList();
+                var chatroom = await _dbContext.Chatrooms
+                   .Where(x => x.Id == chatroomId)
+                   .Where(x => x.Status == ChatroomStatusType.Active)
+                   .FirstOrDefaultAsync();
 
                 return new ChatroomPageModel.ChatroomModel
                 {
                     Id = chatroom.Id,
-                    Members = members,
-                    Name = chatroom.Name ?? GetName(membersWithoutSelf),
-                    NameCaption = chatroom.NameCaption ?? GetNameCaption(membersWithoutSelf)
+                    Name = chatroom.Name,
+                    NameCaption = chatroom.NameCaption,
                 };
             });
-        }
-
-        private static List<ChatroomPageModel.UserModel> GetMembers(Chatroom chatroom)
-        {
-            return chatroom.Memberships
-                .Where(x => x.Status == MembershipStatusType.Active)
-                .Select(x =>
-                {
-                    return new ChatroomPageModel.UserModel
-                    {
-                        Id = x.UserId,
-                        Name = x.User.DisplayName,
-                        NameUid = x.User.DisplayNameUid,
-                        NameCaption = x.User.DisplayNameUid
-                    };
-                }).ToList();
-        }
-
-        private static string GetName(List<ChatroomPageModel.UserModel> membersWithoutSelf)
-        {
-            return membersWithoutSelf.Count != 1
-                ? string.Join(", ", membersWithoutSelf.Select(x => x.Name).Append("You"))
-                : string.Join(", ", membersWithoutSelf.Select(x => x.Name));
-        }
-
-        private static string GetNameCaption(List<ChatroomPageModel.UserModel> membersWithoutSelf)
-        {
-            return membersWithoutSelf.Count == 1
-                ? $"{membersWithoutSelf.First().NameUid}"
-                : $"{membersWithoutSelf.Count + 1} Members";
         }
     }
 }

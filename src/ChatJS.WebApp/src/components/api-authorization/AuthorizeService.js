@@ -3,13 +3,14 @@ import { ApplicationPaths, ApplicationName } from './ApiAuthorizationConstants';
 
 class AuthorizeService {
 
-  setUserState(user) {
-    this.user = user;
-  }
-
   async getUser() {
     await this.ensureUserManagerInitialized();
     return await this._userManager.getUser();
+  }
+
+  async getUserInfo() {
+    const request = 'api/protected/users';
+    this.user = await this.fetch(request);
   }
 
   async getAccessToken() {

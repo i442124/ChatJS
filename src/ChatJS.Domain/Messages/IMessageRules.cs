@@ -7,5 +7,7 @@ namespace ChatJS.Domain.Messages
     public interface IMessageRules
     {
         Task<bool> IsValidAsync(Guid id);
+
+        Task<bool> IsAuthorizedAsync(Guid userId, Guid messageId);
     }
 }

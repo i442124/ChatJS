@@ -1,5 +1,5 @@
-import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 import { AuthService } from "../api-authorization/AuthorizeService";
+import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
 
 class NotificationService {
 
@@ -20,12 +20,20 @@ class NotificationService {
     await this.connection.start();
   }
 
-  on(methodName, chatroomId, action) {
-    this.connection.on(`${methodName} | ChatroomId: ${chatroomId}`, action)
+  on(methodName, action) {
+    this.connection.on(`${methodName}`, action)
   }
 
-  off(methodName, chatroomId, actionRef) {
-    this.connection.off(`${methodName} | ChatroomId: ${chatroomId}`);
+  onScoped(methodName, scope, action) {
+    this.connection.on(`${methodName} | Scope: ${scope}`, action)
+  }
+
+  off(methodName, action) {
+    this.connection.off(`${methodName}`, action)
+  }
+
+  offScoped(methodName, scope, action) {
+    this.connection.off(`${methodName} | Scope: ${scope}`, action);
   }
 }
 

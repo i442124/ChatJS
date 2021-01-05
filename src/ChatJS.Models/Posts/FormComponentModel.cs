@@ -7,6 +7,8 @@ namespace ChatJS.Models.Posts
 {
     public class FormComponentModel
     {
+        public Guid Id { get; set; }
+
         public MessageModel Message { get; set; }
 
         public ChatroomModel Chatroom { get; set; }

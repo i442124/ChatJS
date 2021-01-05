@@ -67,6 +67,7 @@ export class LoginAction extends Component {
 
     switch (result.status) {
       case AuthenticationResultStatus.Success:
+        await AuthService.getUserInfo();
         this.navigateToUrl(state.returnUrl);
         break;
       case AuthenticationResultStatus.Fail:
@@ -85,6 +86,7 @@ export class LoginAction extends Component {
 
     switch (result.status) {
       case AuthenticationResultStatus.Success:
+        await AuthService.getUserInfo();
         this.navigateToUrl(this.getReturnUrl(result.state))
         break;
       case AuthenticationResultStatus.Fail:

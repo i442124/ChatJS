@@ -37,6 +37,7 @@
     <Content Include="package.json" />
     <Content Include="src\App.css" />
     <Content Include="src\App.js" />
+    <Content Include="src\assets\ico\users-empty.svg" />
     <Content Include="src\assets\img\logo.png" />
     <Content Include="src\assets\ico\user.svg" />
     <Content Include="src\components\api-authorization\ApiAuthorizationConstants.js" />
@@ -59,6 +60,12 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\Banner.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatEditorArea.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\components\ChatEditorArea.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="src\components\ChatListArea.css">

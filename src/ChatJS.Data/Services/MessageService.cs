@@ -2,7 +2,7 @@
 using System.Data;
 using System.Threading.Tasks;
 
-using ChatJS.Domain;
+using ChatJS.Data.Caching;
 using ChatJS.Domain.Messages;
 using ChatJS.Domain.Messages.Commands;
 
@@ -14,16 +14,19 @@ namespace ChatJS.Data.Services
 {
     public class MessageService : IMessageService
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IValidator<CreateMessage> _createValidator;
         private readonly IValidator<UpdateMessage> _updateValidator;
 
         public MessageService(
+            ICacheManager cacheManager,
             ApplicationDbContext dbContext,
             IValidator<CreateMessage> createValidator,
             IValidator<UpdateMessage> updateValidator)
         {
             _dbContext = dbContext;
+            _cacheManager = cacheManager;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
         }
@@ -53,6 +56,8 @@ namespace ChatJS.Data.Services
 
             message.Status = MessageStatusType.Deleted;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Message(message.Id));
         }
 
         public async Task<Message> GetByIdAsync(GetMessageById command)
@@ -82,6 +87,8 @@ namespace ChatJS.Data.Services
             message.ModifiedAt = DateTime.UtcNow;
 
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Message(message.Id));
         }
     }
 }

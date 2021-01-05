@@ -27,5 +27,16 @@ namespace ChatJS.Data.Rules
 
             return any;
         }
+
+        public async Task<bool> IsAuthorizedAsync(Guid userId, Guid messageId)
+        {
+            var any = await _dbContext.Messages
+                .AnyAsync(message =>
+                    message.Id == messageId &&
+                    message.CreatedBy == userId &&
+                    message.Status == MessageStatusType.Published);
+
+            return any;
+        }
     }
 }

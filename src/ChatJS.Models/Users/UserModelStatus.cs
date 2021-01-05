@@ -1,6 +1,6 @@
 ﻿namespace ChatJS.Models.Users
 {
-    public enum UserStatus
+    public enum UserModelStatus
     {
         Unknown,
 

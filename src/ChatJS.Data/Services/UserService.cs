@@ -1,7 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
+using ChatJS.Data.Caching;
 using ChatJS.Domain;
 using ChatJS.Domain.Users;
 using ChatJS.Domain.Users.Commands;
@@ -15,16 +17,19 @@ namespace ChatJS.Data.Services
 {
     public class UserService : IUserService
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IValidator<CreateUser> _createValidator;
         private readonly IValidator<UpdateUser> _updateValidator;
 
         public UserService(
+            ICacheManager cacheManager,
             ApplicationDbContext dbContext,
             IValidator<CreateUser> createValidator,
             IValidator<UpdateUser> updateValidator)
         {
             _dbContext = dbContext;
+            _cacheManager = cacheManager;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
         }
@@ -41,6 +46,9 @@ namespace ChatJS.Data.Services
 
             user.Status = UserStatusType.Active;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.User(user.Id));
+            _cacheManager.Remove(CacheKeyCollection.Users(Guid.Empty));
         }
 
         public async Task CreateAsync(CreateUser command)
@@ -57,6 +65,8 @@ namespace ChatJS.Data.Services
 
             await _dbContext.AddAsync(user);
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Users(Guid.Empty));
         }
 
         public async Task DeleteAsync(DeleteUser command)
@@ -66,6 +76,9 @@ namespace ChatJS.Data.Services
 
             user.Status = UserStatusType.Deleted;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.User(user.Id));
+            _cacheManager.Remove(CacheKeyCollection.Users(Guid.Empty));
         }
 
         public async Task<User> GetByIdAsync(GetUserById command)
@@ -106,6 +119,9 @@ namespace ChatJS.Data.Services
 
             user.Status = UserStatusType.Active;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.User(user.Id));
+            _cacheManager.Remove(CacheKeyCollection.Users(Guid.Empty));
         }
 
         public async Task SuspendAsync(SuspendUser command)
@@ -115,6 +131,9 @@ namespace ChatJS.Data.Services
 
             user.Status = UserStatusType.Suspended;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.User(user.Id));
+            _cacheManager.Remove(CacheKeyCollection.Users(Guid.Empty));
         }
 
         public async Task UpdateAsync(UpdateUser command)
@@ -128,6 +147,9 @@ namespace ChatJS.Data.Services
             user.DisplayNameUid = command.DisplayNameUid;
 
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.User(user.Id));
+            _cacheManager.Remove(CacheKeyCollection.Users(Guid.Empty));
         }
     }
 }

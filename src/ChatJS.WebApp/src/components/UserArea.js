@@ -16,7 +16,7 @@ class UserArea extends Component {
 
   async fetchComponentData() {
 
-    const request = `api/private/users`;
+    const request = `api/protected/users`;
     console.log('UserArea', { request });
 
     const response = await AuthService.fetch(request);
@@ -25,8 +25,9 @@ class UserArea extends Component {
     const data = await response.json();
     console.log('UserArea', { data });
 
-    AuthService.setUserState(data);
-    this.setState({ user: data, ready: true});
+    this.setState({ user: data, ready: true });
+    const { componentDataChanged } = this.props;
+    !!componentDataChanged && componentDataChanged(data);
   }
 
   render() {
@@ -38,7 +39,7 @@ class UserArea extends Component {
       <div aria-label="user-area">
         <div className="d-flex align-items-center p-2">
           <div className="flex-grow-1">
-            <Component {...user } />
+            <Component {...user} />
           </div>
           <div className="flex-grow-0">
             <button className="btn btn-dark" onClick={() => AuthService.signOut()}>Logout</button>
@@ -46,7 +47,7 @@ class UserArea extends Component {
         </div>
       </div>
     );
-  } 
+  }
 }
 
 export default UserArea;

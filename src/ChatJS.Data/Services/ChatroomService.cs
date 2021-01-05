@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-using ChatJS.Domain;
+using ChatJS.Data.Caching;
 using ChatJS.Domain.Chatrooms;
 using ChatJS.Domain.Chatrooms.Commands;
 
@@ -14,16 +14,19 @@ namespace ChatJS.Data.Services
 {
     public class ChatroomService : IChatroomService
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IValidator<CreateChatroom> _createValidator;
         private readonly IValidator<UpdateChatroom> _updateValidator;
 
         public ChatroomService(
+            ICacheManager cacheManager,
             ApplicationDbContext dbContext,
             IValidator<CreateChatroom> createValidator,
             IValidator<UpdateChatroom> updateValidator)
         {
             _dbContext = dbContext;
+            _cacheManager = cacheManager;
             _createValidator = createValidator;
             _updateValidator = updateValidator;
         }
@@ -51,6 +54,9 @@ namespace ChatJS.Data.Services
 
             chatroom.Status = ChatroomStatusType.Deleted;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Chatroom(chatroom.Id));
+            _cacheManager.Remove(CacheKeyCollection.Posts(chatroom.Id));
         }
 
         public async Task<Chatroom> GetByIdAsync(GetChatroomById command)
@@ -79,6 +85,9 @@ namespace ChatJS.Data.Services
             chatroom.NameCaption = command.NameCaption;
 
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Chatroom(chatroom.Id));
+            _cacheManager.Remove(CacheKeyCollection.Posts(chatroom.Id));
         }
     }
 }

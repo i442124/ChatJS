@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -53,6 +54,18 @@ namespace ChatJS.WebServer.Hubs
         public Task<T> GetConnectionInfoAsync(string connectionId)
         {
             return Task.Run(() => GetConnectionInfo(connectionId));
+        }
+
+        public IEnumerable<string> GetConnectionIds(T value)
+        {
+            return _connections
+                .Where(pair => pair.Value.Equals(value))
+                .Select(pair => pair.Key);
+        }
+
+        public Task<IEnumerable<string>> GetConnectionIdsAsync(T value)
+        {
+            return Task.FromResult(GetConnectionIds(value));
         }
 
         public IEnumerator<T> GetEnumerator()

@@ -6,7 +6,9 @@ namespace ChatJS.Models.Chatrooms
 {
     public class ChatroomPageModel
     {
-        public List<ChatroomModel> Chatrooms { get; set; }
+        public ChatroomModel Chatroom { get; set; }
+
+        public List<UserModel> Members { get; set; }
 
         public class ChatroomModel
         {
@@ -16,9 +18,7 @@ namespace ChatJS.Models.Chatrooms
 
             public string NameCaption { get; set; }
 
-            public ChatroomStatus Status { get; set; }
-
-            public List<UserModel> Members { get; set; }
+            public ChatroomModelStatus Status { get; set; }
         }
 
         public class UserModel

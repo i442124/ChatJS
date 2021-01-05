@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 using ChatJS.Data;
 using ChatJS.Domain.Memberships;
+using ChatJS.Models.Chatrooms;
+using ChatJS.Models.Memberships;
+using ChatJS.Models.Users;
 using ChatJS.WebServer;
 using ChatJS.WebServer.Hubs;
 
@@ -36,7 +39,15 @@ namespace ChatJS.WebServer.Services
         {
             await Task.WhenAll((await _subscriptions.GetSubscribersAsync(chatroomId)).Select(subscriberId =>
             {
-                return _context.Clients.Client(subscriberId).SendAsync($"{methodName} | ChatroomId: {chatroomId}", content);
+                return _context.Clients.Client(subscriberId).SendAsync($"{methodName}", content);
+            }));
+        }
+
+        public async Task PublishScopedAsync<T>(string methodName, Guid chatroomId, T content)
+        {
+            await Task.WhenAll((await _subscriptions.GetSubscribersAsync(chatroomId)).Select(subscriberId =>
+            {
+                return _context.Clients.Client(subscriberId).SendAsync($"{methodName} | Scope: {chatroomId}", content);
             }));
         }
 
@@ -52,7 +63,7 @@ namespace ChatJS.WebServer.Services
 
             foreach (var membership in memberships)
             {
-                await SubscribeAsync(subscriberId, membership.ChatroomId);
+                await SubscribeAsync(userId, membership.ChatroomId);
             }
         }
 
@@ -62,14 +73,20 @@ namespace ChatJS.WebServer.Services
             await _subscriptions.RemoveSubscriberAsync(subscriberId);
         }
 
-        public async Task SubscribeAsync(string subscriberId, Guid chatroomId)
+        public async Task SubscribeAsync(Guid userId, Guid chatroomId)
         {
-            await _subscriptions.SubscribeAsync(subscriberId, chatroomId);
+            foreach (var subscriberId in await _connections.GetConnectionIdsAsync(userId))
+            {
+                await _subscriptions.SubscribeAsync(subscriberId, chatroomId);
+            }
         }
 
-        public async Task UnsubscribeAsync(string subscriberId, Guid chatroomId)
+        public async Task UnsubscribeAsync(Guid userId, Guid chatroomId)
         {
-            await _subscriptions.UnsubscribeAsync(subscriberId, chatroomId);
+            foreach (var subscriberId in await _connections.GetConnectionIdsAsync(userId))
+            {
+                await _subscriptions.UnsubscribeAsync(subscriberId, chatroomId);
+            }
         }
     }
 }

@@ -16,5 +16,9 @@ namespace ChatJS.WebServer.Hubs
         T GetConnectionInfo(string connectionId);
 
         Task<T> GetConnectionInfoAsync(string connectionId);
+
+        IEnumerable<string> GetConnectionIds(T value);
+
+        Task<IEnumerable<string>> GetConnectionIdsAsync(T value);
     }
 }

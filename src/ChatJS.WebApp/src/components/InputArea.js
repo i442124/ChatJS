@@ -17,7 +17,7 @@ class InputArea extends Component {
   }
 
   async fetchComponentData() {
-    let request = `api/private/messages/create`;
+    let request = `api/protected/messages/create`;
     let response = await AuthService.fetch(request, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -29,7 +29,7 @@ class InputArea extends Component {
       var chatroom = this.props.chatroom;
       var message = await response.json();
 
-      request = `api/private/posts/create`
+      request = `api/protected/posts/create`
       response = await AuthService.fetch(request, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

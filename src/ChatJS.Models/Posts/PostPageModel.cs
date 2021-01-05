@@ -2,14 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using ChatJS.Models;
-using ChatJS.Models.Messages;
-
-namespace ChatJS.Models.Chatlogs
+namespace ChatJS.Models.Posts
 {
-    public class ChatlogPageModel
+    public class PostPageModel
     {
         public List<MessageModel> Messages { get; set; }
+
+        public class ChatroomModel
+        {
+            public Guid Id { get; set; }
+        }
+
+        public class DeliveryModel
+        {
+            public bool IsReadByEveryone { get; set; }
+
+            public bool IsReceivedByEveryone { get; set; }
+        }
 
         public class MessageModel
         {
@@ -17,11 +26,20 @@ namespace ChatJS.Models.Chatlogs
 
             public string Content { get; set; }
 
+            public byte[] Attachment { get; set; }
+
             public UserModel Creator { get; set; }
 
             public DateTime TimeStamp { get; set; }
 
             public DeliveryModel Delivery { get; set; }
+        }
+
+        public class PostModel
+        {
+            public ChatroomModel Chatroom { get; set; }
+
+            public MessageModel Message { get; set; }
         }
 
         public class UserModel
@@ -31,13 +49,6 @@ namespace ChatJS.Models.Chatlogs
             public string Name { get; set; }
 
             public string NameUid { get; set; }
-        }
-
-        public class DeliveryModel
-        {
-            public bool WasReadByEveryone { get; set; }
-
-            public bool WasReceivedByEveryone { get; set; }
         }
     }
 }

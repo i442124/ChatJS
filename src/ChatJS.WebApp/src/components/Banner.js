@@ -8,7 +8,6 @@ class Banner extends Component {
   styles = {
     width: this.props.width || undefined,
     height: this.props.height || undefined,
-    background: this.props.background || '#efefef'
   }
 
   render() {

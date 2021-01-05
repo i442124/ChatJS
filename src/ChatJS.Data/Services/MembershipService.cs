@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using ChatJS.Data.Caching;
 using ChatJS.Domain;
 using ChatJS.Domain.Memberships;
 using ChatJS.Domain.Memberships.Commands;
@@ -12,11 +13,15 @@ namespace ChatJS.Data.Services
 {
     public class MembershipService : IMembershipService
     {
+        private readonly ICacheManager _cacheManager;
         private readonly ApplicationDbContext _dbContext;
 
-        public MembershipService(ApplicationDbContext dbContext)
+        public MembershipService(
+            ICacheManager cacheManager,
+            ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
+            _cacheManager = cacheManager;
         }
 
         public async Task CreateAsync(CreateMembership command)
@@ -30,6 +35,9 @@ namespace ChatJS.Data.Services
 
             await _dbContext.AddAsync(membership);
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Memberships(command.UserId));
+            _cacheManager.Remove(CacheKeyCollection.Members(membership.ChatroomId));
         }
 
         public async Task<Membership> GetByIdAsync(GetMembershipById command)
@@ -55,6 +63,9 @@ namespace ChatJS.Data.Services
 
             membership.Status = MembershipStatusType.Active;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Memberships(command.UserId));
+            _cacheManager.Remove(CacheKeyCollection.Members(membership.ChatroomId));
         }
 
         public async Task SuspendAsync(SuspendMembership command)
@@ -64,6 +75,9 @@ namespace ChatJS.Data.Services
 
             membership.Status = MembershipStatusType.Suspended;
             await _dbContext.SaveChangesAsync();
+
+            _cacheManager.Remove(CacheKeyCollection.Memberships(command.UserId));
+            _cacheManager.Remove(CacheKeyCollection.Members(membership.ChatroomId));
         }
     }
 }

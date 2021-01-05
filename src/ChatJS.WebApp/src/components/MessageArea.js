@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { AuthService } from "./api-authorization/AuthorizeService";
-import { NotifyService } from "./websockets/NotificationService"
+import { NotifyService } from "./websockets/NotificationService";
 
 import './MessageArea.css';
 import './MessageEntry.css';
@@ -13,21 +13,15 @@ class MessageArea extends Component {
   }
 
   componentSourceAdded = (chatroom) => {
-    NotifyService.on("CreatePost", chatroom.id, 
-      message => this.createComponentData(message));
-    NotifyService.on("UpdatePost", chatroom.id, 
-      message => this.updateComponentData(message));
-    NotifyService.on("DeletePost", chatroom.id, 
-      message => this.deleteComponentData(message));
+    NotifyService.onScoped("CreatePost", chatroom.id, this.createComponentData);
+    NotifyService.onScoped("UpdatePost", chatroom.id, this.updateComponentData);
+    NotifyService.onScoped("DeletePost", chatroom.id, this.deleteComponentData);
   }
 
   componentSourceDisposed = (chatroom) => {
-    NotifyService.off("CreatePost", chatroom.id,
-      message => this.createComponentData(message));
-    NotifyService.off("UpdatePost", chatroom.id,
-      message => this.updateComponentData(message));
-    NotifyService.off("DeletePost", chatroom.id,
-      message => this.deleteComponentData(message));
+    NotifyService.offScoped("CreatePost", chatroom.id, this.createComponentData);
+    NotifyService.offScoped("UpdatePost", chatroom.id, this.updateComponentData);
+    NotifyService.offScoped("DeletePost", chatroom.id, this.deleteComponentData);
   }
 
   shouldComponentUpdate(nextProps) {
@@ -37,14 +31,17 @@ class MessageArea extends Component {
       nextProps.chatroom.id !== chatroom.id)) {
 
       if (!!chatroom) {
+        console.log('delete', chatroom);
         this.componentSourceDisposed(chatroom);
       }
 
+      console.log('add', nextProps.chatroom);
       this.componentSourceAdded(nextProps.chatroom);
       this.fetchComponentData(nextProps.chatroom);
       return false;
 
     } else if (!!chatroom && !nextProps.chatroom) {
+      console.log('delete', chatroom);
       this.componentSourceDisposed(chatroom);
       return true;
     }
@@ -54,7 +51,7 @@ class MessageArea extends Component {
 
   async fetchComponentData(chatroom) {
 
-    const request = `api/private/chatlogs/${chatroom.id}`
+    const request = `api/protected/posts/all/${chatroom.id}`
     console.log('MessageArea', { request });
 
     const response = await AuthService.fetch(request);
@@ -66,13 +63,13 @@ class MessageArea extends Component {
     this.setState({ ...data, ready: true });
   }
 
-  createComponentData(message) {
+  createComponentData = (message) => {
     this.setState(prevState => ({
       messages: [...prevState.messages, message]
     }));
   }
 
-  updateComponentData(message) {
+  updateComponentData = (message) => {
     this.setState(prevState => ({
       messages: prevState.messages.map(prevMessage => {
         return message.id !== prevMessage.id ? prevMessage : message;
@@ -80,7 +77,7 @@ class MessageArea extends Component {
     }));
   }
 
-  deleteComponentData(message) {
+  deleteComponentData = (message) => {
     this.setState(prevState => ({
       messages: prevState.messages.filter(prevMessage => {
         return message.id !== prevMessage.id;
@@ -92,13 +89,15 @@ class MessageArea extends Component {
 
     let currentDay = undefined;
     let previousDay = undefined;
-    const localMessages = new Array();
+
+    const localMessages = [];
+    const { user } = this.props;
 
     if (!!globalMessages) {
       globalMessages.forEach(message => {
         const { creator, timeStamp } = message;
 
-        if (creator.id === AuthService.user.id) {
+        if (creator.id === user.id) {
           message.origin = 'send';
         } else {
           message.origin = 'received';
@@ -125,7 +124,7 @@ class MessageArea extends Component {
   render() {
 
     const { ready, messages } = this.state;
-    const { chatroom,
+    const { chatroom, user,
       component: ComponentBody,
       componentHeader: ComponentHeader,
       componentFooter: ComponentFooter } = this.props;
@@ -146,7 +145,7 @@ class MessageArea extends Component {
                 {ready && localMessages.map((message, idx) =>
                   <ComponentBody key={`message-${idx}`} {...message}
                     shouldRenderName={chatroom.members.length !== 2 &&
-                      !!message.creator && message.creator.id !== AuthService.user.id} />
+                      !!message.creator && message.creator.id !== user.id} />
                 )}
               </div>
             </div>
