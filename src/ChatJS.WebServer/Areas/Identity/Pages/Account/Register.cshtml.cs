@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
+using ChatJS.WebServer.Services;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,15 +14,18 @@ namespace ChatJS.WebServer.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
+        private readonly IIntegrityService _integrityService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
 
         public RegisterModel(
             SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager)
+            UserManager<IdentityUser> userManager,
+            IIntegrityService integrityService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _integrityService = integrityService;
         }
 
         [BindProperty]
@@ -38,7 +43,10 @@ namespace ChatJS.WebServer.Areas.Identity.Pages.Account
 
                 if (userIdentityResult.Succeeded)
                 {
+                    await _integrityService.EnsureUserCreatedAsync(user);
+                    await _integrityService.EnsureUserConfirmedAsync(user);
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
                     return LocalRedirect(returnUrl);
                 }
 

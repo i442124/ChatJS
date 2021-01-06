@@ -57,6 +57,7 @@ namespace ChatJS.Data.Services
 
             var user = new User
             {
+                Status = UserStatusType.Pending,
                 DisplayName = command.DisplayName,
                 DisplayNameUid = command.DisplayNameUid,
                 IdentityUserId = command.IdentityUserId,

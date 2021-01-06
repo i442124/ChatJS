@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using ChatJS.Data;
@@ -32,7 +33,7 @@ namespace ChatJS.WebServer.Services
                 {
                     IdentityUserId = identityUser.Id,
                     DisplayName = identityUser.UserName,
-                    DisplayNameUid = "0000",
+                    DisplayNameUid = $"#{new Random().Next(0, 9999):D4}",
                 });
             }
         }
