@@ -95,7 +95,7 @@ class MessageArea extends Component {
 
     if (!!globalMessages) {
       globalMessages.forEach(message => {
-        const { creator, timeStamp } = message;
+        var { creator, timeStamp } = message;
 
         if (creator.id === user.id) {
           message.origin = 'send';
@@ -103,7 +103,7 @@ class MessageArea extends Component {
           message.origin = 'received';
         }
 
-        currentDay = new Date(timeStamp).getDay();
+        currentDay = new Date(timeStamp).toLocaleDateString();
         if (previousDay === undefined || previousDay !== currentDay) {
           localMessages.push({ content: this.getLocaleDateString(timeStamp) });
           previousDay = currentDay;
