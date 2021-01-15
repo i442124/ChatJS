@@ -1,7 +1,12 @@
 import { AuthService } from "../api-authorization/AuthorizeService";
 import { HttpTransportType, HubConnectionBuilder } from "@microsoft/signalr";
+import { ApplicationBaseAddress } from "../api-authorization/ApiAuthorizationConstants";
 
 class NotificationService {
+
+  async stop() {
+    await this.connection.stop();
+  }
 
   async start() {
 
@@ -13,7 +18,7 @@ class NotificationService {
     };
 
     this.connection = new HubConnectionBuilder()
-      .withUrl("/chat", options)
+      .withUrl(`${ApplicationBaseAddress}/chat`, options)
       .withAutomaticReconnect()
       .build();
 

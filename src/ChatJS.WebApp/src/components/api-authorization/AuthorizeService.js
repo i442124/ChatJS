@@ -1,5 +1,5 @@
 import { UserManager, WebStorageStateStore } from 'oidc-client';
-import { ApplicationPaths, ApplicationName } from './ApiAuthorizationConstants';
+import { ApplicationPaths, ApplicationName, ApplicationBaseAddress } from './ApiAuthorizationConstants';
 
 class AuthorizeService {
 
@@ -19,7 +19,6 @@ class AuthorizeService {
   }
 
   async signIn(returnUrl) {
-
     await this.ensureUserManagerInitialized();
     const args = { useReplaceToNavigate: true, data: returnUrl };
 
@@ -85,13 +84,13 @@ class AuthorizeService {
       }
     }
 
-    return await fetch(requestUrl, options);
+    return await fetch(`${ApplicationBaseAddress}/${requestUrl}`, options);
   }
 
   async ensureUserManagerInitialized() {
     if (this._userManager === undefined) {
 
-      var response = await fetch(ApplicationPaths.ApiAuthorizationClientConfigurationUrl);
+      var response = await fetch(`${ApplicationBaseAddress}${ApplicationPaths.ApiAuthorizationClientConfigurationUrl}`);
       if (response.ok) {
 
         var settings = await response.json();

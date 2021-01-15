@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  frontend:
+    build: 
+      context: ./src/ChatJS.WebApp
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+  backend:
+    build:
+      context: ./
+      dockerfile: ./src/ChatJS.WebServer/Dockerfile
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:3002;http://+:3001
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+     - ~/.aspnet/https:/https:ro

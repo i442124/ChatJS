@@ -25,6 +25,15 @@ class HomePage extends Component {
     this.onSignalRConnection();
   }
 
+  componentWillUnmount() {
+    this.offSignalRConnection();
+  }
+
+  async offSignalRConnection() {
+    await NotifyService.stop();
+    this.setState({ ready: false });
+  }
+
   async onSignalRConnection() {
     await NotifyService.start()
     this.setState({ ready: true });
