@@ -22,8 +22,8 @@ namespace ChatJS.Domain.Users.Validators
             RuleFor(c => c.DisplayNameUid)
                 .NotEmpty()
                 .WithMessage("DisplayNameUid is required.")
-                .Length(exactLength: 4)
-                .WithMessage("Display name uid must be exactly 4 numbers long.");
+                .Length(exactLength: 5)
+                .WithMessage("Display name uid must be exactly 5 characters long.");
 
             RuleFor(c => c)
                 .MustAsync((c, cancellation) => rules.IsDisplayNameUniqueAsync(c.DisplayName, c.DisplayNameUid))
