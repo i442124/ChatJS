@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatJS.WebServer", "src\Cha
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatJS.Models", "src\ChatJS.Models\ChatJS.Models.csproj", "{4E2D3F88-A4AC-48F5-BE73-F4A1C358063B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatJS.Data.Tests", "tests\ChatJS.Data.Tests\ChatJS.Data.Tests.csproj", "{B9537509-41D7-42F3-AD36-E992B21857BB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatJS.Data.Tests", "tests\ChatJS.Data.Tests\ChatJS.Data.Tests.csproj", "{B9537509-41D7-42F3-AD36-E992B21857BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatJS.Domain.Tests", "tests\ChatJS.Domain.Tests\ChatJS.Domain.Tests.csproj", "{E908D522-949C-4FAE-B736-571520792C99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatJS.Domain.Tests", "tests\ChatJS.Domain.Tests\ChatJS.Domain.Tests.csproj", "{E908D522-949C-4FAE-B736-571520792C99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,7 +32,6 @@ Global
 		{662F0B48-A713-4667-9837-06D4A4184F5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{662F0B48-A713-4667-9837-06D4A4184F5C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{052D2AA3-1A56-4596-A0BF-3CDCC339417C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{052D2AA3-1A56-4596-A0BF-3CDCC339417C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{052D2AA3-1A56-4596-A0BF-3CDCC339417C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{052D2AA3-1A56-4596-A0BF-3CDCC339417C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A69429E8-0354-4241-BD78-3235F25366E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

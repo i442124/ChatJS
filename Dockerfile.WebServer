@@ -1,0 +1,41 @@
+# pull official base image
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
+
+# setup environment
+ENV ASPNETCORE_URLS=https://+:3002;http://+:3001
+EXPOSE 3002
+EXPOSE 3001
+
+# set working directory
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS restore
+
+# copy config files
+COPY common.props .
+COPY stylecop.json .
+COPY stylecop.props .
+COPY stylecop.ruleset .
+
+# copy source files
+COPY src/ChatJS.Data/. ./src/ChatJS.Data
+COPY src/ChatJS.Domain/. ./src/ChatJS.Domain
+COPY src/ChatJS.Models/. ./src/ChatJS.Models
+COPY src/ChatJS.WebServer/. ./src/ChatJS.WebServer
+
+# restore project
+RUN dotnet restore "src/ChatJS.WebServer/ChatJS.WebServer.csproj"
+
+# build project
+FROM restore AS build
+RUN dotnet build "src/ChatJS.WebServer/ChatJS.WebServer.csproj" -c Release -o app/build
+
+# publish project
+FROM build AS publish
+RUN dotnet publish "src/ChatJS.WebServer/ChatJS.WebServer.csproj" -c Release -o app/publish
+
+# start project
+FROM base as final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "ChatJS.WebServer.dll"]

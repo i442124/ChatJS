@@ -2,14 +2,14 @@ version: "3.9"
 services:
   frontend:
     build: 
-      context: ./src/ChatJS.WebApp
-      dockerfile: Dockerfile
+      context: ./
+      dockerfile: Dockerfile.WebApp
     ports:
       - "3000:3000"
   backend:
     build:
       context: ./
-      dockerfile: ./src/ChatJS.WebServer/Dockerfile
+      dockerfile: Dockerfile.WebServer
     ports:
       - "3001:3001"
       - "3002:3002"
