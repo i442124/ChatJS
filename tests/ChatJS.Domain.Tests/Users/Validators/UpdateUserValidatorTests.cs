@@ -83,7 +83,5 @@ namespace ChatJS.Domain.Tests.Users.Validators
 
             userValidator.ShouldHaveValidationErrorFor(x => x.DisplayNameUid, command);
         }
-
-
     }
 }

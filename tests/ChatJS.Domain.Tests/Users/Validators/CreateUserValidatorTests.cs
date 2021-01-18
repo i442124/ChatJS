@@ -31,10 +31,24 @@ namespace ChatJS.Domain.Tests.Users.Validators
         }
 
         [Fact]
+        public void Should_haveValidationError_When_DisplayNameIsNull()
+        {
+            var command = Fixture.Build<CreateUser>()
+               .With(x => x.DisplayName, (string)null)
+               .With(x => x.DisplayNameUid, "#0000")
+               .Create();
+
+            var userRules = new Mock<IUserRules>();
+            var userValidator = new CreateUserValidator(userRules.Object);
+
+            userValidator.ShouldHaveValidationErrorFor(x => x.DisplayName, command);
+        }
+
+        [Fact]
         public void Should_HaveValidationError_When_DisplayNameIsEmpty()
         {
             var command = Fixture.Build<CreateUser>()
-                .With(x => x.DisplayName, "DisplayName")
+                .With(x => x.DisplayName, string.Empty)
                 .With(x => x.DisplayNameUid, "#0000")
                 .Create();
 
@@ -43,11 +57,13 @@ namespace ChatJS.Domain.Tests.Users.Validators
 
             userValidator.ShouldHaveValidationErrorFor(x => x.DisplayName, command);
         }
+
         [Fact]
         public void ShouldHaveValidationError_When_DisplayNameNotUnique()
         {
             var command = Fixture.Build<CreateUser>()
-             .With(x => x.DisplayName, string.Empty)
+             .With(x => x.DisplayName, "DisplayName")
+             .With(x => x.DisplayNameUid, "#0000")
              .Create();
 
             var userRules = new Mock<IUserRules>();
@@ -71,10 +87,25 @@ namespace ChatJS.Domain.Tests.Users.Validators
         }
 
         [Fact]
+        public void ShouldHaveValidationError_When_DisplayNameUidIsNull()
+        {
+            var command = Fixture.Build<CreateUser>()
+               .With(x => x.DisplayName, "Display Name")
+               .With(x => x.DisplayNameUid, (string)null)
+               .Create();
+
+            var userRules = new Mock<IUserRules>();
+            var userValidator = new CreateUserValidator(userRules.Object);
+
+            userValidator.ShouldHaveValidationErrorFor(x => x.DisplayNameUid, command);
+        }
+
+        [Fact]
         public void ShouldHaveValidationError_When_DisplayNameUidIsEmpty()
         {
             var command = Fixture.Build<CreateUser>()
-               .With(x => x.DisplayName, string.Empty)
+               .With(x => x.DisplayName, "Display Name")
+               .With(x => x.DisplayNameUid, string.Empty)
                .Create();
 
             var userRules = new Mock<IUserRules>();
@@ -95,6 +126,5 @@ namespace ChatJS.Domain.Tests.Users.Validators
 
             userValidator.ShouldHaveValidationErrorFor(x => x.DisplayNameUid, command);
         }
-
     }
 }

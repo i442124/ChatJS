@@ -22,7 +22,8 @@ namespace ChatJS.Data.Tests.Rules
 
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
-                dbContext.Chatrooms.Add(new Chatroom {
+                dbContext.Chatrooms.Add(new Chatroom
+                {
                     Id = dbChatroomId,
                     Name = dbChatroomName,
                     Status = ChatroomStatusType.Active
@@ -33,8 +34,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var chatroomRules = new ChatroomRules(dbContext);
-                var result = await chatroomRules.IsValidAsync(dbChatroomId);
-                Assert.True(result);
+                var chatroomResults = await chatroomRules.IsValidAsync(dbChatroomId);
+                Assert.True(chatroomResults);
             }
         }
 
@@ -91,7 +92,8 @@ namespace ChatJS.Data.Tests.Rules
 
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
-                dbContext.Chatrooms.Add(new Chatroom {
+                dbContext.Chatrooms.Add(new Chatroom
+                {
                     Id = dbChatroomId,
                     Name = dbChatroomName,
                     Status = ChatroomStatusType.Active
@@ -103,8 +105,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var chatroomRules = new ChatroomRules(dbContext);
-                var result = await chatroomRules.IsValidAsync(Guid.NewGuid());
-                Assert.False(result);
+                var chatroomResult = await chatroomRules.IsValidAsync(Guid.NewGuid());
+                Assert.False(chatroomResult);
             }
         }
 
@@ -147,8 +149,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var chatroomRules = new ChatroomRules(dbContext);
-                var result = await chatroomRules.IsAuthorizedAsync(Guid.NewGuid(), dbChatroomId);
-                Assert.False(result);
+                var chatroomResult = await chatroomRules.IsAuthorizedAsync(Guid.NewGuid(), dbChatroomId);
+                Assert.False(chatroomResult);
             }
         }
     }

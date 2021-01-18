@@ -36,8 +36,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var messageRules = new MessageRules(dbContext);
-                var result = await messageRules.IsValidAsync(dbMessageId);
-                Assert.True(result);
+                var messageResult = await messageRules.IsValidAsync(dbMessageId);
+                Assert.True(messageResult);
             }
         }
 
@@ -64,8 +64,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var messageRules = new MessageRules(dbContext);
-                var result = await messageRules.IsAuthorizedAsync(dbMessageAuthorId, dbMessageId);
-                Assert.True(result);
+                var messageResult = await messageRules.IsAuthorizedAsync(dbMessageAuthorId, dbMessageId);
+                Assert.True(messageResult);
             }
         }
 
@@ -91,8 +91,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var messageRules = new MessageRules(dbContext);
-                var result = await messageRules.IsValidAsync(Guid.NewGuid());
-                Assert.False(result);
+                var messageResult = await messageRules.IsValidAsync(Guid.NewGuid());
+                Assert.False(messageResult);
             }
         }
 
@@ -119,8 +119,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var messageRules = new MessageRules(dbContext);
-                var result = await messageRules.IsAuthorizedAsync(Guid.NewGuid(), dbMessageId);
-                Assert.False(result);
+                var messageResult = await messageRules.IsAuthorizedAsync(Guid.NewGuid(), dbMessageId);
+                Assert.False(messageResult);
             }
         }
     }

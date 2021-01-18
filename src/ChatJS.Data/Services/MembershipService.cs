@@ -46,7 +46,7 @@ namespace ChatJS.Data.Services
                 .FirstOrDefaultAsync(membership =>
                     membership.UserId == command.UserId &&
                     membership.ChatroomId == command.ChatroomId &&
-                    membership.Status == MembershipStatusType.Active);
+                    membership.Status != MembershipStatusType.None);
 
             if (membership == null)
             {
