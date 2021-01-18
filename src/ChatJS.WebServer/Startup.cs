@@ -35,7 +35,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,18 +62,6 @@ namespace ChatJS.WebServer
             services.AddSingleton(typeof(IHubConnectionMapper<>), typeof(HubConnectionMapper<>));
             services.AddSingleton(typeof(IHubSubscriptionMapper<>), typeof(HubSubscriptionMapper<>));
 
-            services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .WithOrigins("http://localhost:3000")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
-            });
-
             services.AddRazorPages();
             services.AddControllers()
                 .AddJsonOptions(options =>
@@ -80,10 +70,10 @@ namespace ChatJS.WebServer
                     options.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
                 });
 
-            //services.AddSpaStaticFiles(configuration =>
-            //{
-            //    configuration.RootPath = "../ChatJS.WebApp/build";
-            //});
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ChatJS.WebApp/build";
+            });
 
             ConfigureWebServices(services);
             ConfigureModelServices(services);
@@ -167,12 +157,22 @@ namespace ChatJS.WebServer
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseSpaStaticFiles();
+            app.UseSpaStaticFiles();
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseCors();
+
+            var forwardHeaderOptions = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                RequireHeaderSymmetry = false
+            };
+
+            forwardHeaderOptions.KnownNetworks.Clear();
+            forwardHeaderOptions.KnownProxies.Clear();
+
+            app.UseForwardedHeaders(forwardHeaderOptions);
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -185,14 +185,18 @@ namespace ChatJS.WebServer
                 endpoints.MapHub<ChatHub>("chat");
             });
 
-            //app.UseSpa(spaBuilder =>
-            //{
-            //    spaBuilder.Options.SourcePath = "../ChatJS.WebApp";
-            //    if (env.IsDevelopment())
-            //    {
-            //        spaBuilder.UseReactDevelopmentServer(npmScript: "start");
-            //    }
-            //});
+            app.UseSpa(spaBuilder =>
+            {
+                if (env.IsDevelopment())
+                {
+                    spaBuilder.Options.SourcePath = "../ChatJS.WebApp";
+                    spaBuilder.UseReactDevelopmentServer(npmScript: "start");
+                }
+                else
+                {
+                    spaBuilder.Options.SourcePath = "ClientApp";
+                }
+            });
 
             appContext.Database.Migrate();
             authContext.Database.Migrate();

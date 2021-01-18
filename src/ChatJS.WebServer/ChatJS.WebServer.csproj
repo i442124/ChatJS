@@ -4,53 +4,53 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>6c3fd6da-078f-4e78-a948-3c593ee621ae</UserSecretsId>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    
+
     <!-- Dependency Injection  -->
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    
+
     <!-- Entity Framework Core -->
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.1" />
-    
+
     <!-- Entity Framework Core Tools-->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    
+
     <!-- Entity Framework Core Design -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    
+
     <!-- Identity -->
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.1" />
-    
+
     <!-- Identity Server -->
     <PackageReference Include="Microsoft.AspNetCore.ApiAuthorization.IdentityServer" Version="5.0.1" />
-    
+
     <!-- SignalR -->
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    
+
     <!-- Single page application packages-->
     <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="3.1.10" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.1" />
-    
+
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\ChatJS.Models\ChatJS.Models.csproj" />
     <ProjectReference Include="..\ChatJS.Data\ChatJS.Data.csproj" />
     <ProjectReference Include="..\ChatJS.Domain\ChatJS.Domain.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Remove="obj\**" />
     <Content Remove="bin\**" />
@@ -58,5 +58,6 @@
 
   <Import Project="..\..\common.props" />
   <Import Project="..\..\stylecop.props" />
+  <Import Project="deployment.props"/>
 
 </Project>

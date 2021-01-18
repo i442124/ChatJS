@@ -19,7 +19,7 @@ export const LogoutActions = {
 
 const prefix = '/authentication';
 
-export const ApplicationBaseAddress = 'https://localhost:3002';
+export const ApplicationBaseAddress = '';
 export const ApplicationName = 'ChatJS.WebApp';
 export const ApplicationPaths = {
 

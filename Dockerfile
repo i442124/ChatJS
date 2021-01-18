@@ -1,15 +1,18 @@
 # pull official base image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0-buster-slim AS base
 
-# setup environment
-ENV ASPNETCORE_URLS=https://+:3002;http://+:3001
-EXPOSE 3002
-EXPOSE 3001
-
 # set working directory
 WORKDIR /app
 
+# Expose port 80 to your local machine so you can access the app.
+EXPOSE 80
+EXPOSE 443
+
 FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS restore
+
+## fetch and install Node
+RUN curl --silent --location https://deb.nodesource.com/setup_10.x | bash -
+RUN apt-get install --yes nodejs
 
 # copy config files
 COPY common.props .
@@ -21,6 +24,7 @@ COPY stylecop.ruleset .
 COPY src/ChatJS.Data/. ./src/ChatJS.Data
 COPY src/ChatJS.Domain/. ./src/ChatJS.Domain
 COPY src/ChatJS.Models/. ./src/ChatJS.Models
+COPY src/ChatJS.WebApp/. ./src/ChatJS.WebApp
 COPY src/ChatJS.WebServer/. ./src/ChatJS.WebServer
 
 # restore project
@@ -36,6 +40,7 @@ RUN dotnet publish "src/ChatJS.WebServer/ChatJS.WebServer.csproj" -c Release -o 
 
 # start project
 FROM base as final
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ChatJS.WebServer.dll"]
