@@ -108,7 +108,7 @@ class ChatListArea extends Component {
       chatrooms.length === 0
         ? <div aria-label="chat-list-area">
             <div className="d-flex flex-column h-100 align-items-center justify-content-center">
-              <img src={users_empty} width="160" height="160" />
+              <img src={users_empty} alt="chat-icon" width="160" height="160" />
               <h3 className="text-muted">No conversations found</h3>
               <p className="text-muted">Try starting a conversation with other users of this site!</p>
             </div>
