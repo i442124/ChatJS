@@ -31,12 +31,12 @@ namespace ChatJS.Data.Tests.Services
             var updateValidator = new Mock<IValidator<UpdateUser>>();
             var createValidator = new Mock<IValidator<CreateUser>>();
             createValidator
-                .Setup(x => x.ValidateAsync(command, new CancellationToken()))
+                .Setup(x => x.ValidateAsync(command, CancellationToken.None))
                 .ReturnsAsync(new ValidationResult());
 
             var cacheManager = new Mock<ICacheManager>();
-            var userService = new UserService
-                (cacheManager.Object,
+            var userService = new UserService(
+                cacheManager.Object,
                 dbContext,
                 createValidator.Object,
                 updateValidator.Object);
@@ -55,7 +55,8 @@ namespace ChatJS.Data.Tests.Services
         public async Task Should_ConfirmUser()
         {
             var userId = Guid.NewGuid();
-            var user = new User {
+            var user = new User
+            {
                 Id = userId,
                 DisplayName = "Name",
                 DisplayNameUid = "#0001",
@@ -110,7 +111,7 @@ namespace ChatJS.Data.Tests.Services
             var createValidator = new Mock<IValidator<CreateUser>>();
             var updateValidator = new Mock<IValidator<UpdateUser>>();
             updateValidator
-                .Setup(x => x.ValidateAsync(command, new CancellationToken()))
+                .Setup(x => x.ValidateAsync(command, CancellationToken.None))
                 .ReturnsAsync(new ValidationResult());
 
             var cacheManager = new Mock<ICacheManager>();

@@ -32,7 +32,7 @@ class UserArea extends Component {
 
   render() {
 
-    const { user, ready } = this.state;
+    const { user } = this.state;
     const { component: Component } = this.props;
 
     return (

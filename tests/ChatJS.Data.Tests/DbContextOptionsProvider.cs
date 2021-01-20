@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ChatJS.Data.Tests
@@ -13,7 +15,7 @@ namespace ChatJS.Data.Tests
         private static DbContextOptions<ApplicationDbContext> CreateContextOptions()
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase("ChatJS", new InMemoryDatabaseRoot());
+            builder.UseInMemoryDatabase(Guid.NewGuid().ToString());
             return builder.Options;
         }
     }

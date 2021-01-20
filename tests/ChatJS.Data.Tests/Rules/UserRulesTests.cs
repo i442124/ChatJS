@@ -27,8 +27,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var userRules = new UserRules(dbContext);
-                var result = await userRules.IsValidAsync(dbUserId);
-                Assert.False(result);
+                var userResult = await userRules.IsValidAsync(dbUserId);
+                Assert.False(userResult);
             }
         }
 
@@ -48,8 +48,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var userRules = new UserRules(dbContext);
-                var result = await userRules.IsValidAsync(Guid.NewGuid());
-                Assert.False(result);
+                var userResult = await userRules.IsValidAsync(Guid.NewGuid());
+                Assert.False(userResult);
             }
         }
 
@@ -58,9 +58,9 @@ namespace ChatJS.Data.Tests.Rules
         {
             using var dbContext = new ApplicationDbContext(DbContextOptionsProvider.InMemory);
             var userRules = new UserRules(dbContext);
-            var result = await userRules.IsDisplayNameUniqueAsync("Display Name");
+            var userResult = await userRules.IsDisplayNameUniqueAsync("Display Name");
 
-            Assert.True(result);
+            Assert.True(userResult);
         }
 
         [Fact]
@@ -68,9 +68,9 @@ namespace ChatJS.Data.Tests.Rules
         {
             using var dbContext = new ApplicationDbContext(DbContextOptionsProvider.InMemory);
             var userRules = new UserRules(dbContext);
-            var result = await userRules.IsDisplayNameUniqueAsync("Display Name", "#0000");
+            var userResult = await userRules.IsDisplayNameUniqueAsync("Display Name", "#0000");
 
-            Assert.True(result);
+            Assert.True(userResult);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace ChatJS.Data.Tests.Rules
                 {
                     Id = Guid.NewGuid(),
                     DisplayName = dbUserDisplayName,
-                    DisplayNameUid = dbUserDisplayNameUid
+                    DisplayNameUid = dbUserDisplayNameUid,
                 });
 
                 await dbContext.SaveChangesAsync();
@@ -95,8 +95,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var userRules = new UserRules(dbContext);
-                var result = await userRules.IsDisplayNameUniqueAsync(dbUserDisplayName, "#0002");
-                Assert.True(result);
+                var userResult = await userRules.IsDisplayNameUniqueAsync(dbUserDisplayName, "#0002");
+                Assert.True(userResult);
             }
         }
 
@@ -115,8 +115,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var userRules = new UserRules(dbContext);
-                var result = await userRules.IsDisplayNameUniqueAsync(dbUserDisplayName);
-                Assert.False(result);
+                var userResult = await userRules.IsDisplayNameUniqueAsync(dbUserDisplayName);
+                Assert.False(userResult);
             }
         }
 
@@ -142,8 +142,8 @@ namespace ChatJS.Data.Tests.Rules
             using (var dbContext = new ApplicationDbContext(dbContextOptions))
             {
                 var userRules = new UserRules(dbContext);
-                var result = await userRules.IsDisplayNameUniqueAsync(dbUserDisplayName, dbUserDisplayNameUid);
-                Assert.False(result);
+                var userResult = await userRules.IsDisplayNameUniqueAsync(dbUserDisplayName, dbUserDisplayNameUid);
+                Assert.False(userResult);
             }
         }
     }
