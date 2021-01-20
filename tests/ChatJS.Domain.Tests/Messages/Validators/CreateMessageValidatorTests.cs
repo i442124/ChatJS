@@ -14,7 +14,7 @@ using Moq;
 
 using Xunit;
 
-namespace ChatJS.Domain.Tests.Messages
+namespace ChatJS.Domain.Tests.Messages.Validators
 {
     public class CreateMessageValidatorTests : FixtureBase
     {
