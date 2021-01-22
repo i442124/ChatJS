@@ -93,7 +93,7 @@ class HomePage extends Component {
             aria-label="chat-room-creator"
             className="col-12 col-sm-5 col-lg-3">
             <input hidden type="checkbox" id="create-toggle" />
-            <div className="d-flex flex-column w-100 h-100">
+            <div className="d-flex flex-column h-100">
               <div className="row no-gutters flex-grow-0">
                 <div className="col col-head" style={{ height: 64 }}>
                   <div className="d-flex h-100 align-items-center">

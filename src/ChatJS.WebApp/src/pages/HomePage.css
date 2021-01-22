@@ -10,7 +10,8 @@
 }
 
 [aria-label="chat-room-creator"] {
-    height: 100%;
+    top:0;
+    bottom:0;
     position: absolute;
     pointer-events: none;
 }
