@@ -11,8 +11,7 @@
 }
 
 .form
-.form-banner > img {
-    height: auto;
+.form-banner > picture {
     max-width: 300px;
 }
 
